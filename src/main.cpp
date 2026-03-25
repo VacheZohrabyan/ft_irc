@@ -2,16 +2,15 @@
 
 int main(int argc, char** argv)
 {
+    if (argc != 3)
+        return (std::cerr << "To meny argument" << std::endl, 0);
     try
     {
-        if (argc != 3)
-            throw std::invalid_argument("meny argument");
-        Parsing parsing(argv);
-        Server obj;
-        obj.init(parsing);
+        Server server(argv[1], argv[2]);
     }
     catch(const std::exception& e)
     {
-        std::cout << e.what() << std::endl;
+        std::cerr << e.what() << '\n';
     }
+    
 }

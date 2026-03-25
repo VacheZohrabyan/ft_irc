@@ -1,14 +1,16 @@
-#ifndef FT_IRC_HPP
-#define FT_IRC_HPP
+#pragma once
 
 #include <iostream>
+#include <vector>
 #include <sys/socket.h>
+#include <sys/types.h>
 #include <netinet/in.h>
+#include <cstring>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/epoll.h>
+#include <map>
+#include "server.hpp"
+#include "client.hpp"
 
-#define SOCKEAT SOCK_STREAM
-
-#include "client_class.hpp"
-#include "server_class.hpp"
-#include "parsing.hpp"
-
-#endif
+#define MAX_EVENTS 10
