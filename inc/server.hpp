@@ -2,6 +2,8 @@
 
 #include "../inc/ft_irc.hpp"
 
+class Client;
+
 class Server
 {
 private:
@@ -13,6 +15,8 @@ private:
     struct epoll_event _events[MAX_EVENTS];
     std::map<int, Client> _clients;
 
+    std::vector<std::string> _nickName;
+
 public:
     Server(const std::string& port,const std::string& pass);
 
@@ -20,6 +24,8 @@ private:
     void checkPort(const std::string& port);
     void checkPass(const std::string& pass);
     int set_nonblocking(int sockfd);
-    void addClient(int clientFd);
+    // void addClient(int clientFd);
+    // void hendleException(const std::exception& e, int fd);
+    void sendMessage(const std::string& message, int fd);
     void runServer();
 };

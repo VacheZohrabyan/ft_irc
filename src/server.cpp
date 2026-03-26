@@ -34,11 +34,11 @@ void Server::checkPass(const std::string& pass)
         throw std::invalid_argument("pass there is a space");
 }
 
-void Server::addClient(int clientFd)
-{
-    Client client;
-    _clients[clientFd];
-}
+// void Server::addClient(int clientFd)
+// {
+//     Client client(clientFd);
+//     _clients[clientFd] = client;
+// }
 
 int Server::set_nonblocking(int sockfd)
 {
@@ -53,6 +53,19 @@ int Server::set_nonblocking(int sockfd)
     }
     return 0;
 }
+
+void Server::sendMessage(const std::string& message, int fd)
+{
+    send(fd, message.c_str(), message.length(), 0);
+}
+
+// void Server::hendleException(const std::exception& e, int fd)
+// {
+//     // if (!std::strcmp(e.what(), ERR_NEEDMOREPARAMS))
+//     //     sendMessage(e.what(), fd);
+//     // if (!std::strcmp(e.what(), ERR_ALREADYREGISTRED))
+//     //     sendMessage()
+// }
 
 void Server::runServer()
 {
@@ -108,8 +121,8 @@ void Server::runServer()
                 ev.events = EPOLLIN | EPOLLET;
                 ev.data.fd = clientFd;
                 
-                addClient(clientFd);
-
+                _clients[clientFd] = Client(clientFd, _pass);
+                
                 if (epoll_ctl(epollFd, EPOLL_CTL_ADD, ev.data.fd, &ev) == -1)
                 {
                     std::cerr << "epoll_ctl failed, (clinet_fd)" << std::endl;
@@ -124,15 +137,33 @@ void Server::runServer()
                 std::string message;
                 while ((count = recv(_events[i].data.fd, buffer, 512, 0)) > 0)
                 {
-                    message += buffer;
+                    message.append(buffer, count);
                     std::memset(buffer, 0x0, 512);
+                    try
+                    {
+                        while (message.find("\r\n") != std::string::npos)
+                        {
+                            std::string tmp = message.substr(0, message.find("\r\n"));
+                            std::cout << tmp << std::endl;
+                            _clients[_events[i].data.fd].hendleMessage(_nickName, tmp);
+                            message.erase(0, tmp.length() + 2);
+                        }
+                    }
+                    catch(const std::exception&)
+                    {
+                        std::cout << "exception" << std::endl;
+                        // hendleException(e, _events[i].data.fd);
+                        count = 0;
+                        break;
+                    }
+                    _nickName.push_back(_clients[_events[i].data.fd].getNick());
                 }
                 if (count > 0)
                 {
                     
                 }
                 if (count == 0)
-                {
+                { //stex avelacnel discconect linoxi vector i mechi hanely;
                     std::cerr << "Client " << _events[i].data.fd << " dicconect" << std::endl;
                     epoll_ctl(epollFd, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
                     close(_events[i].data.fd);

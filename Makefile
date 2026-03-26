@@ -9,11 +9,13 @@ OBJ_DIR = obj
 INC_DIR = inc
 
 SRCS = $(SRC_DIR)/main.cpp \
-	   $(SRC_DIR)/server.cpp 
+	   $(SRC_DIR)/server.cpp \
+	   $(SRC_DIR)/client.cpp
 	  
 
 HEADER = $(INC_DIR)/ft_irc.hpp \
-		 $(INC_DIR)/server.hpp
+		 $(INC_DIR)/server.hpp \
+		 $(INC_DIR)/client.hpp
 		 
 
 OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
