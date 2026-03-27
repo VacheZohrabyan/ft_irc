@@ -3,16 +3,37 @@
 Client::Client()
 {
     _isRegistered = false;
+    _sendMessageOne = false;
 }
 
 Client::Client(int fd, const std::string& serverPass)
 {
     _fd = fd;
     _isRegistered = false;
+    _sendMessageOne = false;
     _serverPass = serverPass;
 }
 
-void Client::hendleMessage(const std::vector<std::string> &nickName, std::string& message)
+void Client::messageToClient(std::string& message)
+{
+    if (_isRegistered && !_sendMessageOne)
+    {
+        sendMessage(":localhost 001 " + _nick + " :Welcome to IRC\r\n");
+        sendMessage(":localhost 002 " + _nick + " :Your host is localhost\r\n");
+        sendMessage(":localhost 003 " + _nick + " :This server was created today\r\n");
+        sendMessage(":localhost 004 " + _nick + " localhost 1.0 o o\r\n");
+        _sendMessageOne = true;
+    }
+    if (message.substr(0, 4) == "PING")
+    {
+        std::string tmp = message.substr(5);
+        if (!tmp.empty() && tmp[0] == ' ')
+            tmp.erase(0, 1);
+        sendMessage("PONG : " + tmp + "\r\n");
+    }
+}
+
+void Client::hendleMessage(const std::set<std::string> &nickName, std::string& message)
 {
     if (!_isRegistered)
     {
@@ -38,41 +59,42 @@ void Client::hendleMessage(const std::vector<std::string> &nickName, std::string
             if (_nick.empty())
             {
                 sendMessage(std::string(ERR_NONICKNAMEGIVEN));
-                throw;
+                throw std::runtime_error("");
             }
-            std::vector<std::string>::const_iterator it = nickName.begin();
+            std::set<std::string>::const_iterator it = nickName.begin();
             while (it != nickName.end())
             {
                 if (*it == _nick)
                     break;
                 ++it;
             }
-            if (it == nickName.end())
+            if (it != nickName.end())
             {
                 sendMessage(_nick + std::string(ERR_NICKNAMEINUSE));
-                throw;
+                throw std::runtime_error("");
             }
-            if (std::isalnum(_nick[0]))
+            if (!std::isalnum(_nick[0]))
             {
                 sendMessage("_nick" + std::string(ERR_ERRONEUSNICKNAME));
-                throw;
+                throw std::runtime_error("");
             }
-
             for (std::string::size_type i = 0; i < _nick.length(); ++i)
             {
-                if (std::isalnum(_nick[i]) ||
+                if (!std::isalnum(_nick[i]) ||
                     _nick[i] == '_' || _nick[i] == '-' ||
                     _nick[i] == '{' || _nick[i] == '}' ||
                     _nick[i] == '[' || _nick[i] == ']' ||
                     _nick[i] == '\\')
                 {
                     sendMessage("_nick" + std::string(ERR_ERRONEUSNICKNAME));
-                    throw;
+                    throw std::runtime_error("");
                 }
             }
             message.clear();
         }
-        else if (message.find("USER") != std::string::npos)
+        else if (message.find("USER") != std::string::npos &&
+                 _realName.empty() && _serverName.empty() &&
+                 _hostName.empty() && _userName.empty())
         {
             findUser(message);
             std::cout << "USER " << _userName << " " << _hostName << " " << _serverName << " :" << _realName << std::endl; 
@@ -80,18 +102,18 @@ void Client::hendleMessage(const std::vector<std::string> &nickName, std::string
                 _hostName.empty() || _userName.empty())
             {
                 sendMessage("USER" + std::string(ERR_NEEDMOREPARAMS));
-                throw;
+                throw std::runtime_error("");
             }
             message.clear();
         }
-        // if (message.find("USER") != std::string::npos)
-        // {
-        //     if (_isRegistered)
-        //     {
-        //         sendMessage(std::string(ERR_ALREADYREGISTRED));
-        //         throw;
-        //     }
-        // }
+        if (message.find("USER") != std::string::npos)
+        {
+            if (_isRegistered)
+            {
+                sendMessage(std::string(ERR_ALREADYREGISTRED));
+                throw;
+            }
+        }
         if (!_pass.empty() && !_nick.empty() && 
             !_realName.empty() && !_serverName.empty() &&
             !_hostName.empty() && !_userName.empty())
@@ -99,10 +121,8 @@ void Client::hendleMessage(const std::vector<std::string> &nickName, std::string
             std::cout << "PASS " << _pass << std::endl; 
             std::cout << "NICK " << _nick << std::endl; 
             _isRegistered = true;
-            sendMessage(":localhost 001 " + _nick + " :Welcome to the IRC server, " + _nick + "!\r\n");
         }
     }
-    
 }
 
 void Client::findCapLs(std::string& message)
@@ -181,4 +201,9 @@ void Client::sendMessage(std::string message)
 std::string Client::getNick() const
 {
     return _nick;
+}
+
+bool Client::isRegistered() const
+{
+    return _isRegistered;
 }

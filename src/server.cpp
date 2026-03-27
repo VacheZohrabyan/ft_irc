@@ -32,6 +32,7 @@ void Server::checkPass(const std::string& pass)
         throw std::invalid_argument("pass there is carriage return");
     if (pass.find(" ") != std::string::npos)
         throw std::invalid_argument("pass there is a space");
+    _pass = pass;
 }
 
 // void Server::addClient(int clientFd)
@@ -67,6 +68,64 @@ void Server::sendMessage(const std::string& message, int fd)
 //     //     sendMessage()
 // }
 
+// void Server::findNickAndRemove(const std::string& nick)
+// {
+//     // std::vector<std::string>::const_iterator it = _nickName.begin();
+//     // while (it != _nickName.end())
+//     // {
+//     //     if (*it == nick)
+//     //     {
+//     //         _nickName.erase(it);
+//     //         std::cout << "stex = " << *it << std::endl;
+//     //         return ;
+//     //     }
+//     //     ++it;
+//     // }
+//     // return ;
+// }
+
+std::vector<std::string> Server::mySplit(const std::string& s, char delimiter) {
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(s);
+    while (std::getline(tokenStream, token, delimiter)) {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+
+void Server::joinChanel(std::string& message, int fd)
+{
+    if (message.empty() || message.length() < 2)
+    {
+        sendMessage("JOIN" + std::string(ERR_NEEDMOREPARAMS));
+        throw std::runtime_error("");
+    }
+    if (message[0] == ' ')
+        message.erase(0, 1);
+    if (message[0] == '#')
+    {
+        if (message.find(" ") == std::string::npos)
+        {
+            std::map<std::string, Chanel>::const_iterator it = _chanels.find(message);
+            if (it == _chanels.end())
+            {
+                _chanels[message] = Chanel(message, fd, "");
+                _chanels[message].addClient(fd);
+            }
+        }
+    }
+}
+
+void Server::messageToClients(std::string& message, int fd)
+{
+    if (message.substr(0, 4) == "JOIN")
+    {
+        std::string tmp = message.substr(5);
+        joinChanel(tmp, fd);
+    }
+}
+
 void Server::runServer()
 {
     _socketFd = socket(AF_INET, SOCK_STREAM, 0);
@@ -96,10 +155,10 @@ void Server::runServer()
 
     while (true)
     {
-        int eventCount = epoll_wait(epollFd, _events, MAX_EVENTS, -1);
-        if (eventCount == -1)
+        _eventCount = epoll_wait(epollFd, _events, MAX_EVENTS, -1);
+        if (_eventCount == -1)
             throw std::runtime_error("epoll_wait failed");
-        for (int i = 0; i < eventCount; ++i)
+        for (int i = 0; i < _eventCount; ++i)
         {
             if (_events[i].data.fd == _socketFd)
             {
@@ -122,7 +181,6 @@ void Server::runServer()
                 ev.data.fd = clientFd;
                 
                 _clients[clientFd] = Client(clientFd, _pass);
-                
                 if (epoll_ctl(epollFd, EPOLL_CTL_ADD, ev.data.fd, &ev) == -1)
                 {
                     std::cerr << "epoll_ctl failed, (clinet_fd)" << std::endl;
@@ -139,32 +197,40 @@ void Server::runServer()
                 {
                     message.append(buffer, count);
                     std::memset(buffer, 0x0, 512);
-                    try
+                    if (!_clients[_events[i].data.fd].isRegistered())
+                    {
+                        try
+                        {
+                            while (message.find("\r\n") != std::string::npos)
+                            {
+                                std::string tmp = message.substr(0, message.find("\r\n"));
+                                _clients[_events[i].data.fd].hendleMessage(_nickName, tmp);
+                                message.erase(0, tmp.length() + 2);
+                            }
+                            if (_clients[_events[i].data.fd].isRegistered())
+                                _nickName.insert(_clients[_events[i].data.fd].getNick());
+                        }
+                        catch(const std::exception&)
+                        {
+                            epoll_ctl(epollFd, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
+                            close(_events[i].data.fd);
+                        }
+                    }
+                    else
                     {
                         while (message.find("\r\n") != std::string::npos)
                         {
                             std::string tmp = message.substr(0, message.find("\r\n"));
-                            std::cout << tmp << std::endl;
-                            _clients[_events[i].data.fd].hendleMessage(_nickName, tmp);
+                            messageToClients(tmp, fd);
                             message.erase(0, tmp.length() + 2);
                         }
                     }
-                    catch(const std::exception&)
-                    {
-                        std::cout << "exception" << std::endl;
-                        // hendleException(e, _events[i].data.fd);
-                        count = 0;
-                        break;
-                    }
-                    _nickName.push_back(_clients[_events[i].data.fd].getNick());
-                }
-                if (count > 0)
-                {
-                    
                 }
                 if (count == 0)
-                { //stex avelacnel discconect linoxi vector i mechi hanely;
-                    std::cerr << "Client " << _events[i].data.fd << " dicconect" << std::endl;
+                {
+                    std::cerr << "Client " << _events[i].data.fd << " disconnect" << std::endl;
+                    _nickName.erase(_clients[_events[i].data.fd].getNick());
+                    _clients.erase(_events[i].data.fd);
                     epoll_ctl(epollFd, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
                     close(_events[i].data.fd);
                     break;
@@ -173,7 +239,6 @@ void Server::runServer()
                 {
                     if (errno != EAGAIN)
                     {
-                        std::cerr << "read failed" << std::endl;
                         epoll_ctl(epollFd, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
                         close(_events[i].data.fd);
                     }

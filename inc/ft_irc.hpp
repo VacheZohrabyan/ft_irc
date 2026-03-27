@@ -10,6 +10,8 @@
 #include <unistd.h>
 #include <sys/epoll.h>
 #include <map>
+#include <set>
+#include <sstream>
 
 #define MAX_EVENTS 10
 
@@ -21,3 +23,4 @@
 
 #include "server.hpp"
 #include "client.hpp"
+#include "chanel.hpp"

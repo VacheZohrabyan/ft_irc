@@ -8,6 +8,7 @@ class Client
 {
 private:
     bool _isRegistered;
+    bool _sendMessageOne;
     int _fd;
 
     std::string _serverPass;
@@ -26,7 +27,8 @@ public:
     Client(int fd, const std::string& serverPass);
 
 public:
-    void hendleMessage(const std::vector<std::string>& nickName, std::string& message);
+    void hendleMessage(const std::set<std::string>& nickName, std::string& message);
+    void messageToClient(std::string& message);
 
 private:
     void findCapLs(std::string& message);
@@ -37,4 +39,5 @@ private:
 
 public:
     std::string getNick() const;
+    bool isRegistered() const;
 };
