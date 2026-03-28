@@ -44,12 +44,12 @@ void Client::hendleMessage(const std::set<std::string> &nickName, std::string& m
             if (_pass.empty())
             {
                 sendMessage("PASS" + std::string(ERR_NEEDMOREPARAMS));
-                throw;
+                throw std::runtime_error("");
             }
             if (_pass != _serverPass)
             {
                 sendMessage(std::string(ERR_ALREADYREGISTRED));
-                throw;
+                throw std::runtime_error("");
             }
             message.clear();
         }
@@ -97,7 +97,6 @@ void Client::hendleMessage(const std::set<std::string> &nickName, std::string& m
                  _hostName.empty() && _userName.empty())
         {
             findUser(message);
-            std::cout << "USER " << _userName << " " << _hostName << " " << _serverName << " :" << _realName << std::endl; 
             if (_realName.empty() || _serverName.empty() ||
                 _hostName.empty() || _userName.empty())
             {
@@ -106,23 +105,21 @@ void Client::hendleMessage(const std::set<std::string> &nickName, std::string& m
             }
             message.clear();
         }
-        if (message.find("USER") != std::string::npos)
-        {
-            if (_isRegistered)
-            {
-                sendMessage(std::string(ERR_ALREADYREGISTRED));
-                throw;
-            }
-        }
+        // if (message.find("USER") != std::string::npos)
+        // {
+        //     if (_isRegistered)
+        //     {
+        //         sendMessage(std::string(ERR_ALREADYREGISTRED));
+        //         throw;
+        //     }
+        // }
         if (!_pass.empty() && !_nick.empty() && 
             !_realName.empty() && !_serverName.empty() &&
             !_hostName.empty() && !_userName.empty())
-        {
-            std::cout << "PASS " << _pass << std::endl; 
-            std::cout << "NICK " << _nick << std::endl; 
             _isRegistered = true;
-        }
     }
+    if (_isRegistered)
+        messageToClient(message);
 }
 
 void Client::findCapLs(std::string& message)
@@ -201,6 +198,11 @@ void Client::sendMessage(std::string message)
 std::string Client::getNick() const
 {
     return _nick;
+}
+
+std::string Client::getUser() const
+{
+    return _userName;
 }
 
 bool Client::isRegistered() const

@@ -3,6 +3,7 @@
 #include "../inc/ft_irc.hpp"
 
 class Client;
+class Chanel;
 
 class Server
 {
@@ -30,12 +31,9 @@ private:
     void checkPort(const std::string& port);
     void checkPass(const std::string& pass);
     int set_nonblocking(int sockfd);
-    // void findNickAndRemove(const std::string& nick);
-    // void addClient(int clientFd);
-    // void hendleException(const std::exception& e, int fd);
     void sendMessage(const std::string& message, int fd);
-    void messageToClients(std::string& message, int fd);
-    void joinChanel(std::string& message, int fd);
+    void handleMessageToChanel(std::string& message, int fd);
+    void handleJoin(std::string &argument, const std::string& pass, int fd);
     
     void runServer();
 };

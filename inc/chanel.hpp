@@ -1,3 +1,5 @@
+#pragma once
+
 #include "ft_irc.hpp"
 
 class Chanel
@@ -12,6 +14,8 @@ public:
     void removeClient(int fd);
 
     bool hasClient(int fd) const;
+
+    void broadCast(const std::string& message, int openClose);
 
 public:
     Chanel();

@@ -10,11 +10,13 @@ INC_DIR = inc
 
 SRCS = $(SRC_DIR)/main.cpp \
 	   $(SRC_DIR)/server.cpp \
-	   $(SRC_DIR)/client.cpp
+	   $(SRC_DIR)/client.cpp \
+	   $(SRC_DIR)/chanel.cpp
 	  
 
 HEADER = $(INC_DIR)/ft_irc.hpp \
 		 $(INC_DIR)/server.hpp \
+		 $(INC_DIR)/client.hpp \
 		 $(INC_DIR)/client.hpp
 		 
 

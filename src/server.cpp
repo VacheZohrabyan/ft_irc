@@ -94,37 +94,79 @@ std::vector<std::string> Server::mySplit(const std::string& s, char delimiter) {
     return tokens;
 }
 
-void Server::joinChanel(std::string& message, int fd)
+void Server::handleJoin(std::string& chanelName, const std::string& pass, int fd)
 {
-    if (message.empty() || message.length() < 2)
+    if (chanelName[0] == '#')
     {
-        sendMessage("JOIN" + std::string(ERR_NEEDMOREPARAMS));
-        throw std::runtime_error("");
-    }
-    if (message[0] == ' ')
-        message.erase(0, 1);
-    if (message[0] == '#')
-    {
-        if (message.find(" ") == std::string::npos)
+        chanelName = chanelName.erase(0, 1);
+        if (pass.empty())
         {
-            std::map<std::string, Chanel>::const_iterator it = _chanels.find(message);
-            if (it == _chanels.end())
+
+            std::cout << "handleJoin" << fd << std::endl;
+            if (_chanels.find(chanelName) == _chanels.end())
+                _chanels[chanelName] = Chanel(chanelName, fd, pass);
+            if (_chanels.find(chanelName) != _chanels.end() && !_chanels[chanelName].hasClient(fd))
+                _chanels[chanelName].addClient(fd);
+            else
             {
-                _chanels[message] = Chanel(message, fd, "");
-                _chanels[message].addClient(fd);
+                //sendMessage(vor client ka);
+                // throw;
             }
+            std::string joinMessage = ":" + _clients[fd].getNick() + " JOIN :" + chanelName + "\r\n";
+            _chanels[chanelName].broadCast(joinMessage, -1);
         }
+    }
+    else if (chanelName[0] == '&')
+    {
+        // esel verevi nman
     }
 }
 
-void Server::messageToClients(std::string& message, int fd)
+void Server::handleMessageToChanel(std::string& message, int fd)
 {
+    std::cout << "message = " << message << std::endl;
+    if (message.substr(0, 4) == "PING")
+    {
+        std::string response = (message.length() > 5) ? message.substr(5) : "localhost";
+        if (!response.empty() && response[0] == ':')
+            response.erase(0, 1);
+        
+        std::string pong = "PONG :" + response + "\r\n";
+        send(fd, pong.c_str(), pong.length(), 0);
+    }
     if (message.substr(0, 4) == "JOIN")
     {
         std::string tmp = message.substr(5);
-        joinChanel(tmp, fd);
+        std::string::size_type first = tmp.find_first_not_of(' ');
+        if (first != std::string::npos)
+            tmp = tmp.substr(first);
+        first = tmp.find(' ');
+        if (first == std::string::npos)
+        {
+            std::cout << "stex = " << tmp << std::endl;
+            handleJoin(tmp, "", fd);
+        }
+        else
+        {
+            std::string chanelName = tmp.substr(0, first);
+            std::string pass = tmp.substr(first + 1);
+            handleJoin(chanelName, pass, fd);
+        }
     }
-}
+    else if (message.substr(0, 7) == "PRIVMSG")
+    {
+        std::string tmp = message.substr(8);
+        if (tmp.find(" ") == std::string::npos)
+            return;
+        std::string chanelName = tmp.substr(0, tmp.find(" "));
+        tmp = tmp.substr(tmp.find(" "));
+        std::string privateMessage = tmp.substr(tmp.find(" :") + 1);
+        std::string fullIRCMessage = ":" + _clients[fd].getNick() + "!" + _clients[fd].getUser() + "@localhost PRIVMSG #" + chanelName + " " + privateMessage + "\r\n";
+        if (_chanels.find(chanelName) != _chanels.end())
+            _chanels[chanelName].broadCast(fullIRCMessage, fd); 
+        
+    }
+}    
 
 void Server::runServer()
 {
@@ -192,38 +234,36 @@ void Server::runServer()
                 char buffer[512];
                 std::memset(buffer, 0x0, 512);
                 ssize_t count;
-                std::string message;
                 while ((count = recv(_events[i].data.fd, buffer, 512, 0)) > 0)
                 {
-                    message.append(buffer, count);
+                    _clients[_events[i].data.fd].message.append(buffer, count);
                     std::memset(buffer, 0x0, 512);
-                    if (!_clients[_events[i].data.fd].isRegistered())
+                    try
                     {
-                        try
+                        std::string::size_type pos;
+                        while ((pos = _clients[_events[i].data.fd].message.find("\r\n")) != std::string::npos)
                         {
-                            while (message.find("\r\n") != std::string::npos)
+                            std::string tmp = _clients[_events[i].data.fd].message.substr(0, pos);
+                            if (!_clients[_events[i].data.fd].isRegistered())
                             {
-                                std::string tmp = message.substr(0, message.find("\r\n"));
                                 _clients[_events[i].data.fd].hendleMessage(_nickName, tmp);
-                                message.erase(0, tmp.length() + 2);
+                                _clients[_events[i].data.fd].message.erase(0, pos + 2);
+                                tmp.clear();                        
                             }
-                            if (_clients[_events[i].data.fd].isRegistered())
-                                _nickName.insert(_clients[_events[i].data.fd].getNick());
+                            else if (_clients[_events[i].data.fd].isRegistered())
+                            {
+                                handleMessageToChanel(tmp, _events[i].data.fd);
+                                _clients[_events[i].data.fd].message.erase(0, pos + 2);
+                                tmp.clear();                        
+                            }
                         }
-                        catch(const std::exception&)
-                        {
-                            epoll_ctl(epollFd, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
-                            close(_events[i].data.fd);
-                        }
+                        if (_clients[_events[i].data.fd].isRegistered())
+                            _nickName.insert(_clients[_events[i].data.fd].getNick());
                     }
-                    else
+                    catch(const std::exception&)
                     {
-                        while (message.find("\r\n") != std::string::npos)
-                        {
-                            std::string tmp = message.substr(0, message.find("\r\n"));
-                            messageToClients(tmp, fd);
-                            message.erase(0, tmp.length() + 2);
-                        }
+                        epoll_ctl(epollFd, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
+                        close(_events[i].data.fd);
                     }
                 }
                 if (count == 0)

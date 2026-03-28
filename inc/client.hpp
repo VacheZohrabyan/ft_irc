@@ -19,7 +19,9 @@ private:
     std::string _serverName;
     std::string _hostName;
     std::string _userName;
-    std::string _message;
+
+public:
+    std::string message;
 
 
 public:
@@ -39,5 +41,6 @@ private:
 
 public:
     std::string getNick() const;
+    std::string getUser() const;
     bool isRegistered() const;
 };
