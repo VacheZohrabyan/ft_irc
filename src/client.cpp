@@ -200,6 +200,11 @@ std::string Client::getNick() const
     return _nick;
 }
 
+void Client::setNick(const std::string& nick)
+{
+    _nick = nick;
+}
+
 std::string Client::getUser() const
 {
     return _userName;

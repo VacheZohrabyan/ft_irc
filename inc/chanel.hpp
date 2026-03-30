@@ -9,6 +9,7 @@ private:
     std::string _key;
     int _rootFd;
     std::set<int> _clients;
+
 public:
     void addClient(int fd);
     void removeClient(int fd);
@@ -20,4 +21,7 @@ public:
 public:
     Chanel();
     Chanel(const std::string& name, int fd, const std::string& key);
+
+public:
+    std::set<int> getClient() const;
 };

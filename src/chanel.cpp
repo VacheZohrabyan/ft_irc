@@ -38,3 +38,8 @@ void Chanel::broadCast(const std::string& message, int openClose)
             send(*it, message.c_str(), message.length(), 0);
     }
 }
+
+std::set<int> Chanel::getClient() const
+{
+    return _clients;
+}

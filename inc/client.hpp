@@ -23,7 +23,6 @@ private:
 public:
     std::string message;
 
-
 public:
     Client();
     Client(int fd, const std::string& serverPass);
@@ -41,6 +40,7 @@ private:
 
 public:
     std::string getNick() const;
+    void setNick(const std::string& nick);
     std::string getUser() const;
     bool isRegistered() const;
 };

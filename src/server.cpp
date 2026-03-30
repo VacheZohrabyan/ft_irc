@@ -35,12 +35,6 @@ void Server::checkPass(const std::string& pass)
     _pass = pass;
 }
 
-// void Server::addClient(int clientFd)
-// {
-//     Client client(clientFd);
-//     _clients[clientFd] = client;
-// }
-
 int Server::set_nonblocking(int sockfd)
 {
     int flags = fcntl(sockfd, F_GETFL, 0);
@@ -57,32 +51,9 @@ int Server::set_nonblocking(int sockfd)
 
 void Server::sendMessage(const std::string& message, int fd)
 {
+    std::cout << "sendMessage = " << message;
     send(fd, message.c_str(), message.length(), 0);
 }
-
-// void Server::hendleException(const std::exception& e, int fd)
-// {
-//     // if (!std::strcmp(e.what(), ERR_NEEDMOREPARAMS))
-//     //     sendMessage(e.what(), fd);
-//     // if (!std::strcmp(e.what(), ERR_ALREADYREGISTRED))
-//     //     sendMessage()
-// }
-
-// void Server::findNickAndRemove(const std::string& nick)
-// {
-//     // std::vector<std::string>::const_iterator it = _nickName.begin();
-//     // while (it != _nickName.end())
-//     // {
-//     //     if (*it == nick)
-//     //     {
-//     //         _nickName.erase(it);
-//     //         std::cout << "stex = " << *it << std::endl;
-//     //         return ;
-//     //     }
-//     //     ++it;
-//     // }
-//     // return ;
-// }
 
 std::vector<std::string> Server::mySplit(const std::string& s, char delimiter) {
     std::vector<std::string> tokens;
@@ -122,49 +93,48 @@ void Server::handleJoin(std::string& chanelName, const std::string& pass, int fd
     }
 }
 
-void Server::handleMessageToChanel(std::string& message, int fd)
+void Server::handleMessageToChanel(std::string& mes, int fd)
 {
-    std::cout << "message = " << message << std::endl;
-    if (message.substr(0, 4) == "PING")
+    std::cout << "message = " << mes << std::endl;
+    std::vector<std::string> message = mySplit(mes, ' ');
+    std::cout << "message.size = " << message.size() << std::endl;
+
+    if (message[0] == "PING")
     {
-        std::string response = (message.length() > 5) ? message.substr(5) : "localhost";
-        if (!response.empty() && response[0] == ':')
-            response.erase(0, 1);
-        
-        std::string pong = "PONG :" + response + "\r\n";
+        std::string pong = "PONG :" + message[1] + "\r\n";
         send(fd, pong.c_str(), pong.length(), 0);
     }
-    if (message.substr(0, 4) == "JOIN")
+    else if (message[0] == "NICK")
     {
-        std::string tmp = message.substr(5);
-        std::string::size_type first = tmp.find_first_not_of(' ');
-        if (first != std::string::npos)
-            tmp = tmp.substr(first);
-        first = tmp.find(' ');
-        if (first == std::string::npos)
+        if (message.size() == 1)
+            return sendMessage("431 NICK " + std::string(ERR_NONICKNAMEGIVEN), fd);
+        if (_nickName.find(message[1]) != _nickName.end())
+            return sendMessage("433 " + message[1] + ERR_NICKNAMEINUSE, fd);
+        std::string oldNick = _clients[fd].getNick();
+        _clients[fd].setNick(message[1]);
+        // vor chanel mech ka message uxarkel
+        std::string nickMsg = ":" + oldNick + "!" + _clients[fd].getUser() + "@localhost NICK :" + _clients[fd].getNick() + "\r\n";
+        for (std::map<std::string, Chanel>::const_iterator chanel = _chanels.begin(); chanel != _chanels.end(); ++chanel)
         {
-            std::cout << "stex = " << tmp << std::endl;
-            handleJoin(tmp, "", fd);
-        }
-        else
-        {
-            std::string chanelName = tmp.substr(0, first);
-            std::string pass = tmp.substr(first + 1);
-            handleJoin(chanelName, pass, fd);
+            std::set<int> client = chanel->second.getClient();
+            if (client.find(fd) != client.end())
+                _chanels[chanel->first].broadCast(nickMsg, -1);
         }
     }
-    else if (message.substr(0, 7) == "PRIVMSG")
+    else if (message[0] == "JOIN")
     {
-        std::string tmp = message.substr(8);
-        if (tmp.find(" ") == std::string::npos)
+        if (message.size() < 2)
+            return sendMessage(":localhost 461 " + _clients[fd].getNick() + " JOIN" + std::string(ERR_NEEDMOREPARAMS), fd);
+        handleJoin(message[1], (message.size() == 2) ? "" : message[2], fd);
+    }
+    else if (message[0] == "PRIVMSG")
+    {
+        if (message.size() < 3)
+            return ;
+        if (_chanels.find(message[1]) != _chanels.end())
+            _chanels[message[1]].broadCast(":" + _clients[fd].getNick() + "!" + _clients[fd].getUser() + "@localhost PRIVMSG #" + message[1] + " " + message[2] + "\r\n", fd);
+        else
             return;
-        std::string chanelName = tmp.substr(0, tmp.find(" "));
-        tmp = tmp.substr(tmp.find(" "));
-        std::string privateMessage = tmp.substr(tmp.find(" :") + 1);
-        std::string fullIRCMessage = ":" + _clients[fd].getNick() + "!" + _clients[fd].getUser() + "@localhost PRIVMSG #" + chanelName + " " + privateMessage + "\r\n";
-        if (_chanels.find(chanelName) != _chanels.end())
-            _chanels[chanelName].broadCast(fullIRCMessage, fd); 
-        
     }
 }    
 
@@ -243,19 +213,14 @@ void Server::runServer()
                         std::string::size_type pos;
                         while ((pos = _clients[_events[i].data.fd].message.find("\r\n")) != std::string::npos)
                         {
+                            std::cout << "ClientMessage = " << _clients[_events[i].data.fd].message << std::endl;
                             std::string tmp = _clients[_events[i].data.fd].message.substr(0, pos);
                             if (!_clients[_events[i].data.fd].isRegistered())
-                            {
-                                _clients[_events[i].data.fd].hendleMessage(_nickName, tmp);
-                                _clients[_events[i].data.fd].message.erase(0, pos + 2);
-                                tmp.clear();                        
-                            }
+                                _clients[_events[i].data.fd].hendleMessage(_nickName, tmp);                       
                             else if (_clients[_events[i].data.fd].isRegistered())
-                            {
                                 handleMessageToChanel(tmp, _events[i].data.fd);
-                                _clients[_events[i].data.fd].message.erase(0, pos + 2);
-                                tmp.clear();                        
-                            }
+                            _clients[_events[i].data.fd].message.erase(0, pos + 2);
+                            tmp.clear(); 
                         }
                         if (_clients[_events[i].data.fd].isRegistered())
                             _nickName.insert(_clients[_events[i].data.fd].getNick());
