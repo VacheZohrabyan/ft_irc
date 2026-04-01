@@ -1,12 +1,13 @@
-#include "../inc/ft_irc.hpp"
+#include "../inc/include.hpp"
+#include "../inc/server.hpp"
 
 int main(int argc, char** argv)
 {
     if (argc != 3)
-        return (std::cerr << "To meny argument" << std::endl, 0);
+        return -1;
     try
     {
-        Server server(argv[1], argv[2]);
+        Server obj(argv);
     }
     catch(const std::exception& e)
     {

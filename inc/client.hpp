@@ -1,25 +1,22 @@
 #pragma once
 
-#include "ft_irc.hpp"
-
-// class Server;
+#include "include.hpp"
+#include "ARegisterCommand.hpp"
 
 class Client
 {
 private:
     bool _isRegistered;
-    bool _sendMessageOne;
     int _fd;
-
-    std::string _serverPass;
-    
     std::string _pass;
     std::string _nick;
-    std::string _realName;
-    std::string _serverName;
-    std::string _hostName;
-    std::string _userName;
+    std::string _user;
+    std::string _host;
+    std::string _server;
+    std::string _real;
+    std::string _serverPass;
 
+    
 public:
     std::string message;
 
@@ -28,19 +25,19 @@ public:
     Client(int fd, const std::string& serverPass);
 
 public:
-    void hendleMessage(const std::set<std::string>& nickName, std::string& message);
-    void messageToClient(std::string& message);
-
-private:
-    void findCapLs(std::string& message);
-    void findPass(std::string& message);
-    void findNick(std::string& message);
-    void findUser(std::string& message);
-    void sendMessage(std::string message);
-
-public:
+    void setPass(const std::string& newPass);
+    void setNick(const std::string& newNick);
+    void setUser(const std::string& newUser);
+    void setHost(const std::string& newHost);
+    void setServer(const std::string& newServer);
+    void setReal(const std::string& newReal);
+    bool getIsRegistered() const;
+    void setIsRegistered(bool is);
+    std::string getPass() const;
+    std::string getServerPass() const;
     std::string getNick() const;
-    void setNick(const std::string& nick);
     std::string getUser() const;
-    bool isRegistered() const;
+    std::string getHost() const;
+    std::string getServer() const;
+    std::string getReal() const;
 };

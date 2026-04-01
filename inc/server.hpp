@@ -1,39 +1,48 @@
 #pragma once
 
-#include "../inc/ft_irc.hpp"
+#include "include.hpp"
+#include "client.hpp"
 
-class Client;
-class Chanel;
+#include "capCommand.hpp"
+#include "passCommand.hpp"
+#include "nickCommand.hpp"
+#include "userCommand.hpp"
+#include "pingCommand.hpp"
+
+#include "joinCommand.hpp"
 
 class Server
 {
 private:
     std::string _port;
     std::string _pass;
+
+private:
     int _socketFd;
     int _eventCount;
-    struct sockaddr_in _serverAddr;
     struct epoll_event _event;
     struct epoll_event _events[MAX_EVENTS];
+    struct sockaddr_in _serverAddr;
+    std::map<std::string, ARegisterCommand*> _registerCommand;
+    std::map<std::string, AChannelCommand*> _channelCommand;
+    std::map<std::string, Client> _chanels;
     std::map<int, Client> _clients;
-
     std::set<std::string> _nickName;
 
-    std::map<std::string, Chanel> _chanels;
+public:
+    Server();
+    Server(char** argv);
+    Server(const Server& other);
+    Server& operator=(const Server& other);
+    ~Server();
+
+private:
+    void hendlePort(const std::string& port);
+    void hendlePass(const std::string& pass);
+    void executeCommand(int fd, const std::string& message);
+private:
+    int setNonblocking(int fd);
 
 public:
-    Server(const std::string& port,const std::string& pass);
-
-private:
-    std::vector<std::string> mySplit(const std::string& message, char delimiter);
-
-private:
-    void checkPort(const std::string& port);
-    void checkPass(const std::string& pass);
-    int set_nonblocking(int sockfd);
-    void sendMessage(const std::string& message, int fd);
-    void handleMessageToChanel(std::string& message, int fd);
-    void handleJoin(std::string &argument, const std::string& pass, int fd);
-    
     void runServer();
 };
