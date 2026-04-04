@@ -23,7 +23,7 @@ SRCS = $(SRC_DIR)/main.cpp \
 	   $(SRC_DIR)/$(REG_DIR)/nickCommand.cpp \
 	   $(SRC_DIR)/$(REG_DIR)/userCommand.cpp \
 	   $(SRC_DIR)/$(REG_DIR)/pingCommand.cpp \
-	   #$(SRC_DIR)/$(CHA_DIR)/channel.cpp \
+	   $(SRC_DIR)/$(CHA_DIR)/chanel.cpp \
 	   $(SRC_DIR)/$(CHA_DIR)/joinCommand.cpp \
 	  
 
@@ -31,13 +31,14 @@ HEADER = $(INC_DIR)/include.hpp \
 		 $(INC_DIR)/server.hpp \
 		 $(INC_DIR)/client.hpp \
 		 $(INC_DIR)/utils.hpp \
+		 $(INC_DIR)/$(REG_DIR)/ARegisterCommand.hpp \
 		 $(INC_DIR)/$(REG_DIR)/capCommand.hpp \
 		 $(INC_DIR)/$(REG_DIR)/passCommand.hpp \
 		 $(INC_DIR)/$(REG_DIR)/nickCommand.hpp \
 		 $(INC_DIR)/$(REG_DIR)/userCommand.hpp \
 		 $(INC_DIR)/$(REG_DIR)/pingCommand.hpp \
-		 $(INC_DIR)/$(REG_DIR)/ARegisterCommand.hpp \
-		 #$(INC_DIR)/$(CHA_DIR)/channel.hpp \
+		 $(INC_DIR)/$(CHA_DIR)/AChannelCommand.hpp \
+		 $(INC_DIR)/$(CHA_DIR)/chanel.hpp \
 		 $(INC_DIR)/$(CHA_DIR)/joinCommand.hpp \
 
 

@@ -2,11 +2,17 @@
 
 #include "../include.hpp"
 
+class Client;
+class Chanel;
+
 class AChannelCommand
 {
 public:
-    virtual ~AChannelCommand();
+    virtual ~AChannelCommand()
+    {
+        
+    }
 
 public:
-    virtual void executeCommand() = 0;
+    virtual void executeCommand(Client& client, std::map<std::string, Chanel>& chanel, int fd, std::vector<std::string>& message) = 0;
 };

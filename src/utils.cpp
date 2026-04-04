@@ -32,14 +32,43 @@ void Utils::errorAlreadyRegister(const std::string& nick, int fd)
 
 void Utils::errorNickNameInUse(const std::string& nick, int fd)
 {
-    std::string tmpMsg = ":localhost 433 " + nick + ERR_NICKNAMEINUSE;
+    std::string tmpMsg = ":localhost 433 * " + nick + ERR_NICKNAMEINUSE;
+    // std::string tmpMsg = ":localhost 433 " + nick + nick + " :Nickname is already in use\r\n";
     Utils::sendMessage(fd, tmpMsg);
-    throw std::runtime_error("");
+    // throw std::runtime_error("");
 }
 
 void Utils::errorChanelIsFull(const std::string& chanelName, int fd)
 {
-    std::string tmpMsg = chanelName + ERR_CHANNELISFULL;
+    std::string tmpMsg = ":localhost 471 " + chanelName + ERR_CHANNELISFULL;
+    Utils::sendMessage(fd, tmpMsg);
+    throw std::runtime_error("");
+}
+
+void Utils::errorBadChanMask(const std::string& chanelName, int fd)
+{
+    std::string tmpMsg = ":localhost 475 " + chanelName + ERR_BADCHANMASK;
+    Utils::sendMessage(fd, tmpMsg);
+    throw std::runtime_error("");
+}
+
+void Utils::errorNoSuchChannel(const std::string& chanelName, int fd)
+{
+    std::string tmpMsg = ":localhost 403 " + chanelName + ERR_NOSUCHCHANNEL;
+    Utils::sendMessage(fd, tmpMsg);
+    throw std::runtime_error("");
+}
+
+void Utils::errorTooManyChannels(const std::string& chanelName, int fd)
+{
+    std::string tmpMsg = ":localhost 405 " + chanelName + ERR_TOOMANYCHANNELS;
+    Utils::sendMessage(fd, tmpMsg);
+    throw std::runtime_error("");
+}
+
+void Utils::errorChannelIsFull(const std::string& chanelName, int fd)
+{
+    std::string tmpMsg = ":localhost 471 " + chanelName + ERR_CHANNELISFULL;
     Utils::sendMessage(fd, tmpMsg);
     throw std::runtime_error("");
 }

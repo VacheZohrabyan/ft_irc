@@ -17,7 +17,7 @@ Server::Server(char** argv)
     // _registerCommand["QUIT"] = new QuitCommand();
     _registerCommand["PING"] = new PingCommand();
     // channel
-    // _channelCommand["JOIN"] = new JoinCommand();
+    _channelCommand["JOIN"] = new JoinCommand();
     // _channelCommand["PART"] = new PartCommand();
     // _channelCommand["TOPIC"] = new TopicCommand();
     // _channelCommand["NAMES"] = new NamesCommand();
@@ -26,7 +26,7 @@ Server::Server(char** argv)
     // _channelCommand["KICK"] = new KickCommand();
     // Messageing;
     // _messageCommand["PRIVMSG"] = new PrivMsgCommand();
-    // _messageCommand["NOTICE"] = new NoticeCommand()
+    // _messageCommand["NOTICE"] = new NoticeCommand();
     // Administration
     // _administrativeCommand["MODE"] = new ModeCommand();
     // _administrativeCommand["WHO"] = new WhoCommand();
@@ -103,19 +103,21 @@ void Server::executeCommand(int fd, const std::string& message)
     if (tmp.empty())
         return ;
     if (_registerCommand.find(tmp[0]) != _registerCommand.end() && !_clients[fd].getIsRegistered())
-        _registerCommand[tmp[0]]->executeCommand(_clients[fd], fd, tmp);
+        _registerCommand[tmp[0]]->executeCommand(_clients[fd], _nickName, fd, tmp);
     else if (_channelCommand.find(tmp[0]) != _channelCommand.end())
-    {
-        try
-        {
-            _channelCommand[tmp[0]]->executeCommand();
-        }
-        catch(const std::exception& e)
-        {
-            std::cerr << e.what() << '\n';
-        }
-        
-    }
+        _channelCommand[tmp[0]]->executeCommand(_clients[fd], _chanels, fd, tmp);        
+    // else if (_messageCommand.find(tmp[0]) != _messageCommand.end())
+    // {
+    //     if (_chanels.find(tmp[0]) != _chanels.end())
+    //     {
+    //         if (_chanels[tmp[0]].hasClient(fd))
+    //             _messageCommand[tmp[0]]->executeCommand(_clients[fd], _chanels[tmp[0]], fd, tmp);
+    //         else
+    //             Utils::errorNoSuchChannel(tmp[0], fd);
+    //     }
+    //     else
+    //         Utils::errorBadChanMask(tmp[0], fd);
+    // }
 }
 
 void Server::runServer()
@@ -194,6 +196,7 @@ void Server::runServer()
                         while ((pos = _clients[_events[i].data.fd].message.find("\r\n")) != std::string::npos)
                         {
                             std::string tmp = _clients[_events[i].data.fd].message.substr(0, pos);
+                            std::cout << "command = " << tmp << std::endl;
                             executeCommand(_events[i].data.fd, tmp);
                             _clients[_events[i].data.fd].message.erase(0, pos + 2);
                         }
@@ -203,8 +206,6 @@ void Server::runServer()
                         epoll_ctl(epollFd, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
                         close(_events[i].data.fd);
                     }
-                    if (_clients[i].getIsRegistered())
-                        _nickName.insert(_clients[i].getNick());
                 }
                 if (count == 0)
                 {

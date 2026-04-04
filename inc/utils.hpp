@@ -2,8 +2,6 @@
 
 #include "include.hpp"
 
-#define ERR_CHANNELISFULL " :Cannot join channel (+l)"
-
 class Utils
 {
 public:
@@ -15,4 +13,8 @@ public:
     static void errorAlreadyRegister(const std::string& nick, int fd);
     static void errorNickNameInUse(const std::string& nick, int fd);
     static void errorChanelIsFull(const std::string& chanelName, int fd);
+    static void errorBadChanMask(const std::string& chanelName, int fd);
+    static void errorNoSuchChannel(const std::string& chanelName, int fd);
+    static void errorTooManyChannels(const std::string& chanelName, int fd);
+    static void errorChannelIsFull(const std::string& chanelName, int fd);
 };

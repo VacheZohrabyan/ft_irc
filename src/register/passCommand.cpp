@@ -11,8 +11,9 @@ PassCommand::~PassCommand()
 
 }
 
-void PassCommand::executeCommand(Client& client, int fd, std::vector<std::string>& message)
+void PassCommand::executeCommand(Client& client, std::set<std::string>& _nickName, int fd, std::vector<std::string>& message)
 {
+    (void)_nickName;
     if (client.getIsRegistered())
         Utils::errorAlreadyRegister(client.getNick(), fd);
     std::string tmp;
@@ -26,5 +27,4 @@ void PassCommand::executeCommand(Client& client, int fd, std::vector<std::string
     client.setPass(tmp);
     if (client.getServerPass() != tmp)
         Utils::errorAlreadyRegister(client.getNick(), fd);
-    std::cout << "stex2" << std::endl;
 }

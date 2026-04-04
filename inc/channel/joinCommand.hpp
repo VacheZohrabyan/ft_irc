@@ -3,8 +3,10 @@
 #include "../include.hpp"
 #include "AChannelCommand.hpp"
 #include "../utils.hpp"
+#include "chanel.hpp"
 
 class client;
+class Chanel;
 
 class JoinCommand : public AChannelCommand
 {
@@ -13,5 +15,5 @@ public:
     ~JoinCommand();
 
 public:
-    void executeCommand();
+    void executeCommand(Client& client, std::map<std::string, Chanel>& chanel, int fd, std::vector<std::string>& message);
 };

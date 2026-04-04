@@ -11,6 +11,8 @@
 
 #include "joinCommand.hpp"
 
+#include "message/privmsgCommand.hpp"
+
 class Server
 {
 private:
@@ -25,7 +27,8 @@ private:
     struct sockaddr_in _serverAddr;
     std::map<std::string, ARegisterCommand*> _registerCommand;
     std::map<std::string, AChannelCommand*> _channelCommand;
-    std::map<std::string, Client> _chanels;
+    std::map<std::string, AMessageCommand*> _messageCommand;
+    std::map<std::string, Chanel> _chanels;
     std::map<int, Client> _clients;
     std::set<std::string> _nickName;
 

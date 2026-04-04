@@ -12,5 +12,5 @@ public:
     ~UserCommand();
 
 public:
-    void executeCommand(Client& client, int fd, std::vector<std::string>& message);
+    void executeCommand(Client& client, std::set<std::string>& _nickName, int fd, std::vector<std::string>& message);
 };
