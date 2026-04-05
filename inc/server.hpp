@@ -9,7 +9,7 @@
 #include "userCommand.hpp"
 #include "pingCommand.hpp"
 
-#include "joinCommand.hpp"
+#include "channel/joinCommand.hpp"
 
 #include "message/privmsgCommand.hpp"
 
@@ -43,7 +43,9 @@ private:
     void hendlePort(const std::string& port);
     void hendlePass(const std::string& pass);
     void executeCommand(int fd, const std::string& message);
+
 private:
+    bool isRegistered(Client& client, int fd);
     int setNonblocking(int fd);
 
 public:

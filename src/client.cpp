@@ -2,6 +2,7 @@
 
 Client::Client()
 {
+    _isRegistered = false;
 }
 
 Client::Client(int fd, const std::string& serverPass)

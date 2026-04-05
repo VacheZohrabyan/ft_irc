@@ -35,7 +35,7 @@ void Utils::errorNickNameInUse(const std::string& nick, int fd)
     std::string tmpMsg = ":localhost 433 * " + nick + ERR_NICKNAMEINUSE;
     // std::string tmpMsg = ":localhost 433 " + nick + nick + " :Nickname is already in use\r\n";
     Utils::sendMessage(fd, tmpMsg);
-    // throw std::runtime_error("");
+    // throw std::runtime_error("errorNickNameInUse");
 }
 
 void Utils::errorChanelIsFull(const std::string& chanelName, int fd)

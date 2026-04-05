@@ -1,15 +1,19 @@
 #include "../../inc/message/privmsgCommand.hpp"
 
-PrivMsg::PrivMsg()
+PrivMsgCommand::PrivMsgCommand()
 {
 
 }
 
-PrivMsg::~PrivMsg()
+PrivMsgCommand::~PrivMsgCommand()
 {
 
 }
 
-void PrivMsg::executeCommand(Client& client, Chanel& chanel, int fd, std::vector<std::string>& message)
+void PrivMsgCommand::executeCommand(Client& client, Chanel& chanel, int fd, std::vector<std::string>& message)
 {
+    (void)client;
+    (void)chanel;
+    (void)fd;
+    (void)message;
 }

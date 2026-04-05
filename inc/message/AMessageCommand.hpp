@@ -2,6 +2,9 @@
 
 #include "../include.hpp"
 
+class Client;
+class Chanel;
+
 class AMessageCommand
 {
 public:

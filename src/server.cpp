@@ -25,7 +25,7 @@ Server::Server(char** argv)
     // _channelCommand["INVITE"] = new InviteCommand();
     // _channelCommand["KICK"] = new KickCommand();
     // Messageing;
-    // _messageCommand["PRIVMSG"] = new PrivMsgCommand();
+    _messageCommand["PRIVMSG"] = new PrivMsgCommand();
     // _messageCommand["NOTICE"] = new NoticeCommand();
     // Administration
     // _administrativeCommand["MODE"] = new ModeCommand();
@@ -78,8 +78,6 @@ void Server::hendlePass(const std::string& pass)
         throw std::invalid_argument("pass there is new line");
     if (pass.find("\r") != std::string::npos)
         throw std::invalid_argument("pass there is carriage return");
-    if (pass.find(" ") != std::string::npos)
-        throw std::invalid_argument("pass there is a space");
     _pass = pass;
 }
 
@@ -97,12 +95,26 @@ int Server::setNonblocking(int fd)
     return 0;
 }
 
+bool Server::isRegistered(Client& client, int fd)
+{
+    if (client.getNick().empty() || client.getUser().empty() || client.getPass().empty())
+        return false;
+    else if (!client.getNick().empty() && !client.getUser().empty() && !client.getPass().empty() && !client.getIsRegistered())
+    {
+        Utils::sendMessage(fd, ":localhost 001 " + client.getNick() + " :Welcome to IRC\r\n");
+        Utils::sendMessage(fd, ":localhost 002 " + client.getNick() + " :Your host is localhost\r\n");
+        Utils::sendMessage(fd, ":localhost 003 " + client.getNick() + " :This server was created today\r\n");
+        Utils::sendMessage(fd, ":localhost 004 " + client.getNick() + " localhost 1.0 o o\r\n");
+    }
+    return true;
+}
+
 void Server::executeCommand(int fd, const std::string& message)
 {
     std::vector<std::string> tmp = Utils::mySplit(message, ' ');
     if (tmp.empty())
         return ;
-    if (_registerCommand.find(tmp[0]) != _registerCommand.end() && !_clients[fd].getIsRegistered())
+    if (_registerCommand.find(tmp[0]) != _registerCommand.end())
         _registerCommand[tmp[0]]->executeCommand(_clients[fd], _nickName, fd, tmp);
     else if (_channelCommand.find(tmp[0]) != _channelCommand.end())
         _channelCommand[tmp[0]]->executeCommand(_clients[fd], _chanels, fd, tmp);        
@@ -200,9 +212,12 @@ void Server::runServer()
                             executeCommand(_events[i].data.fd, tmp);
                             _clients[_events[i].data.fd].message.erase(0, pos + 2);
                         }
+                        if (isRegistered(_clients[_events[i].data.fd], _events[i].data.fd) && !_clients[_events[i].data.fd].getIsRegistered())
+                            _clients[_events[i].data.fd].setIsRegistered(true);
                     }
-                    catch(const std::exception&)
+                    catch(const std::exception& e)
                     {
+                        _clients[_events[i].data.fd].message.clear();
                         epoll_ctl(epollFd, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
                         close(_events[i].data.fd);
                     }
