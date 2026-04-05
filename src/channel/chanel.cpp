@@ -1,4 +1,5 @@
 #include "../../inc/channel/chanel.hpp"
+#include "../../inc/client.hpp"
 
 Chanel::Chanel()
 {
@@ -33,15 +34,20 @@ void Chanel::addClient(int fd, const std::string& nick)
     _clients[fd] = nick;
 }
 
-void Chanel::showAll(int fd)
+void Chanel::showAll(int fd, const Client& client)
 {
+    std::string tmpMessage = ":localhost 353 " + client.getNick() + " = " + _chanelName + " :";
     for (std::map<int, std::string>::const_iterator it = _clients.begin(); it != _clients.end(); ++it)
     {
-        std::string tmpMessage = ":localhost 353 " + it->second + " = " + _chanelName + " :" + it->second + ((it->first == _chanelRootFd) ? "@admin_user" : "admin") + "\r\n"; 
-        if (it->first == fd)
-            continue;
-        Utils::sendMessage(it->first, tmpMessage);
+        if (it != _clients.begin())
+            tmpMessage += " ";
+        if (it->first == _chanelRootFd)
+            tmpMessage += "@";
+
+        tmpMessage += it->second;
     }
+    tmpMessage += "\r\n";
+    Utils::sendMessage(fd, tmpMessage);
 }
 
 void Chanel::broadCast(const std::string& message, int all)
@@ -52,6 +58,13 @@ void Chanel::broadCast(const std::string& message, int all)
             continue;
         Utils::sendMessage(it->first, message);
     }
+}
+
+bool Chanel::hasClient(int fd)
+{
+    if (_clients.find(fd) != _clients.end())
+        return true;
+    return false;
 }
 
 int Chanel::getCountClient() const

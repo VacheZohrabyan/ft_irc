@@ -1,0 +1,23 @@
+<< CAP LS
+<< PASS 1234
+<< NICK vzohraby
+<< USER vzohraby vzohraby 10.12.6.4 :Vache Zohrabyan
+>> :localhost CAP * LS
+<< CAP END
+>> :localhost 001 vzohraby :Welcome to IRC
+<< MODE vzohraby +i
+>> :localhost 002 vzohraby :Your host is localhost
+>> :localhost 003 vzohraby :This server was created today
+>> :localhost 004 vzohraby localhost 1.0 o o
+<< CAP LS
+<< PASS 1234
+<< NICK vzohraby
+<< USER vzohraby vzohraby 10.12.6.4 :Vache Zohrabyan
+>> :localhost CAP * LS
+<< CAP END
+>> :localhost 001 vzohraby :Welcome to IRC
+<< MODE vzohraby +i
+>> :localhost 002 vzohraby :Your host is localhost
+>> :localhost 003 vzohraby :This server was created today
+>> :localhost 004 vzohraby localhost 1.0 o o
+<< PING localhost

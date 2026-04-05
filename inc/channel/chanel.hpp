@@ -26,7 +26,7 @@ public:
     void addClient(int fd, const std::string& name);
     void removeChanel(int fd);
     bool hasClient(int fd);
-    void showAll(int fd);
+    void showAll(int fd, const Client& client);
     void broadCast(const std::string& message, int all);
     
 public:

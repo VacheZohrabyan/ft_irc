@@ -52,6 +52,13 @@ void Utils::errorBadChanMask(const std::string& chanelName, int fd)
     throw std::runtime_error("");
 }
 
+void Utils::errorNoSuchNick(const std::string& chanelName, int fd)
+{
+    std::string tmpMsg = ":localhost 401 " + chanelName + ERR_NOSUCHCHANNEL;
+    Utils::sendMessage(fd, tmpMsg);
+    throw std::runtime_error("");
+}
+
 void Utils::errorNoSuchChannel(const std::string& chanelName, int fd)
 {
     std::string tmpMsg = ":localhost 403 " + chanelName + ERR_NOSUCHCHANNEL;
@@ -69,6 +76,13 @@ void Utils::errorTooManyChannels(const std::string& chanelName, int fd)
 void Utils::errorChannelIsFull(const std::string& chanelName, int fd)
 {
     std::string tmpMsg = ":localhost 471 " + chanelName + ERR_CHANNELISFULL;
+    Utils::sendMessage(fd, tmpMsg);
+    throw std::runtime_error("");
+}
+
+void Utils::errorNoTestToSend(int fd)
+{
+    std::string tmpMsg = ERR_NOTEXTTOSEND;
     Utils::sendMessage(fd, tmpMsg);
     throw std::runtime_error("");
 }

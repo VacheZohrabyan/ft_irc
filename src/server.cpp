@@ -26,7 +26,7 @@ Server::Server(char** argv)
     // _channelCommand["KICK"] = new KickCommand();
     // Messageing;
     _messageCommand["PRIVMSG"] = new PrivMsgCommand();
-    // _messageCommand["NOTICE"] = new NoticeCommand();
+    _messageCommand["NOTICE"] = new NoticeCommand();
     // Administration
     // _administrativeCommand["MODE"] = new ModeCommand();
     // _administrativeCommand["WHO"] = new WhoCommand();
@@ -118,18 +118,13 @@ void Server::executeCommand(int fd, const std::string& message)
         _registerCommand[tmp[0]]->executeCommand(_clients[fd], _nickName, fd, tmp);
     else if (_channelCommand.find(tmp[0]) != _channelCommand.end())
         _channelCommand[tmp[0]]->executeCommand(_clients[fd], _chanels, fd, tmp);        
-    // else if (_messageCommand.find(tmp[0]) != _messageCommand.end())
-    // {
-    //     if (_chanels.find(tmp[0]) != _chanels.end())
-    //     {
-    //         if (_chanels[tmp[0]].hasClient(fd))
-    //             _messageCommand[tmp[0]]->executeCommand(_clients[fd], _chanels[tmp[0]], fd, tmp);
-    //         else
-    //             Utils::errorNoSuchChannel(tmp[0], fd);
-    //     }
-    //     else
-    //         Utils::errorBadChanMask(tmp[0], fd);
-    // }
+    else if (_messageCommand.find(tmp[0]) != _messageCommand.end())
+    {
+        if (_chanels.find(tmp[1]) != _chanels.end())
+                _messageCommand[tmp[0]]->executeCommand(_clients[fd], _clients, _chanels[tmp[1]], fd, tmp);
+        else
+            Utils::errorBadChanMask(tmp[0], fd);
+    }
 }
 
 void Server::runServer()

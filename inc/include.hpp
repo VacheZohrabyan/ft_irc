@@ -25,3 +25,5 @@
 #define ERR_NOSUCHCHANNEL " :No such channel\r\n"
 #define ERR_TOOMANYCHANNELS " :You have joined too many channels\r\n"
 #define ERR_CHANNELISFULL " :Cannot join channel (+l)\r\n"
+#define ERR_NOSUCHNICK " :No such nick/channel\r\n"
+#define ERR_NOTEXTTOSEND ":localhost 412 :No text to send\r\n"

@@ -14,5 +14,5 @@ public:
     }
 
 public:
-    virtual void executeCommand(Client& client, Chanel& chanel, int fd, std::vector<std::string>& message) = 0;
+    virtual void executeCommand(Client& client, const std::map<int, Client>& clients, Chanel& chanel, int fd, std::vector<std::string>& message) = 0;
 };

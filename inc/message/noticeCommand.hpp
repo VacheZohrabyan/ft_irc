@@ -7,11 +7,11 @@
 class Client;
 class Chanel;
 
-class PrivMsgCommand : public AMessageCommand
+class NoticeCommand : public AMessageCommand
 {
 public:
-    PrivMsgCommand();
-    ~PrivMsgCommand();
+    NoticeCommand();
+    ~NoticeCommand();
 
 public:
     void executeCommand(Client& client, const std::map<int, Client>& clients, Chanel& chanel, int fd, std::vector<std::string>& message);

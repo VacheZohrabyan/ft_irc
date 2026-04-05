@@ -12,6 +12,7 @@
 #include "channel/joinCommand.hpp"
 
 #include "message/privmsgCommand.hpp"
+#include "message/noticeCommand.hpp"
 
 class Server
 {
