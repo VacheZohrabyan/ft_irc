@@ -23,9 +23,13 @@ SRCS = $(SRC_DIR)/main.cpp \
 	   $(SRC_DIR)/$(REG_DIR)/nickCommand.cpp \
 	   $(SRC_DIR)/$(REG_DIR)/userCommand.cpp \
 	   $(SRC_DIR)/$(REG_DIR)/pingCommand.cpp \
+	   $(SRC_DIR)/$(REG_DIR)/quitCommand.cpp \
 	   $(SRC_DIR)/$(CHA_DIR)/chanel.cpp \
 	   $(SRC_DIR)/$(CHA_DIR)/joinCommand.cpp \
+	   $(SRC_DIR)/$(CHA_DIR)/quitCommand.cpp \
+	   $(SRC_DIR)/$(CHA_DIR)/partCommand.cpp \
 	   $(SRC_DIR)/$(MES_DIR)/privmsgCommand.cpp \
+	   $(SRC_DIR)/$(MES_DIR)/quitCommand.cpp \
 	   $(SRC_DIR)/$(MES_DIR)/noticeCommand.cpp \
 	  
 
@@ -39,11 +43,15 @@ HEADER = $(INC_DIR)/include.hpp \
 		 $(INC_DIR)/$(REG_DIR)/nickCommand.hpp \
 		 $(INC_DIR)/$(REG_DIR)/userCommand.hpp \
 		 $(INC_DIR)/$(REG_DIR)/pingCommand.hpp \
+		 $(INC_DIR)/$(REG_DIR)/quitCommand.hpp \
 		 $(INC_DIR)/$(CHA_DIR)/AChannelCommand.hpp \
 		 $(INC_DIR)/$(CHA_DIR)/chanel.hpp \
 		 $(INC_DIR)/$(CHA_DIR)/joinCommand.hpp \
+		 $(INC_DIR)/$(CHA_DIR)/quitCommand.hpp \
+		 $(INC_DIR)/$(CHA_DIR)/partCommand.hpp \
 	     $(INC_DIR)/$(MES_DIR)/privmsgCommand.hpp \
 	     $(INC_DIR)/$(MES_DIR)/noticeCommand.hpp \
+	     $(INC_DIR)/$(MES_DIR)/quitCommand.hpp \
 
 
 OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)

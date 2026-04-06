@@ -81,3 +81,10 @@ void Chanel::setTopic(const std::string& topic)
 {
     _chanelTopic = topic;
 }
+
+void Chanel::removeChanel(int fd)
+{
+    _clients.erase(fd);
+    if (fd == _chanelRootFd)
+        _chanelRootFd = _clients.begin()->first;
+}

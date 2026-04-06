@@ -10,7 +10,7 @@ NoticeCommand::~NoticeCommand()
 
 }
 
-void NoticeCommand::executeCommand(Client& client, const std::map<int, Client>& clients, Chanel& chanel, int fd, std::vector<std::string>& message)
+void NoticeCommand::executeCommand(Client& client, std::map<int, Client>& clients, Chanel& chanel, int fd, std::vector<std::string>& message)
 {
     (void)client;
     (void)chanel;

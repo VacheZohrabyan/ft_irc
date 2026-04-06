@@ -3,16 +3,22 @@
 #include "include.hpp"
 #include "client.hpp"
 
-#include "capCommand.hpp"
-#include "passCommand.hpp"
-#include "nickCommand.hpp"
-#include "userCommand.hpp"
-#include "pingCommand.hpp"
+#include "register/capCommand.hpp"
+#include "register/passCommand.hpp"
+#include "register/nickCommand.hpp"
+#include "register/userCommand.hpp"
+#include "register/pingCommand.hpp"
+#include "register/quitCommand.hpp"
 
+#include "channel/partCommand.hpp"
 #include "channel/joinCommand.hpp"
+#include "channel/quitCommand.hpp"
 
 #include "message/privmsgCommand.hpp"
 #include "message/noticeCommand.hpp"
+#include "message/quitCommand.hpp"
+
+extern bool server_runing;
 
 class Server
 {
@@ -23,6 +29,7 @@ private:
 private:
     int _socketFd;
     int _eventCount;
+    int _epollFD;
     struct epoll_event _event;
     struct epoll_event _events[MAX_EVENTS];
     struct sockaddr_in _serverAddr;
@@ -44,11 +51,12 @@ private:
     void hendlePort(const std::string& port);
     void hendlePass(const std::string& pass);
     void executeCommand(int fd, const std::string& message);
-
-private:
-    bool isRegistered(Client& client, int fd);
     int setNonblocking(int fd);
-
+    
+    private:
+    bool isRegistered(Client& client, int fd);
+    
+    
 public:
     void runServer();
 };

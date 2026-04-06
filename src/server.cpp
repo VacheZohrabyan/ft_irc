@@ -5,7 +5,7 @@ Server::Server()
 {
 }
 
-Server::Server(char** argv)
+Server::Server(char** argv) : _socketFd(-1), _epollFD(-1)
 {
     hendlePort(argv[1]);
     hendlePass(argv[2]);
@@ -14,11 +14,12 @@ Server::Server(char** argv)
     _registerCommand["PASS"] = new PassCommand();
     _registerCommand["NICK"] = new NickCommand();
     _registerCommand["USER"] = new UserCommand();
-    // _registerCommand["QUIT"] = new QuitCommand();
     _registerCommand["PING"] = new PingCommand();
+    _registerCommand["QUIT"] = new QuitRegisterCommand();
     // channel
     _channelCommand["JOIN"] = new JoinCommand();
-    // _channelCommand["PART"] = new PartCommand();
+    _channelCommand["QUIT"] = new QuitChannelCommand();
+    _channelCommand["PART"] = new PartCommand();
     // _channelCommand["TOPIC"] = new TopicCommand();
     // _channelCommand["NAMES"] = new NamesCommand();
     // _channelCommand["LIST"] = new ListCommand();
@@ -27,13 +28,13 @@ Server::Server(char** argv)
     // Messageing;
     _messageCommand["PRIVMSG"] = new PrivMsgCommand();
     _messageCommand["NOTICE"] = new NoticeCommand();
+    _messageCommand["QUIT"] = new QuitMessageCommand();
     // Administration
     // _administrativeCommand["MODE"] = new ModeCommand();
     // _administrativeCommand["WHO"] = new WhoCommand();
     // _administrativeCommand["WHOIS"] = new WhoisCommand();
     // _administrativeCommand["OPER"] = new OperCommand();
     // _administrativeCommand["KILL"] = new KillCommand();
-    runServer();
 }
 
 Server::Server(const Server& other)
@@ -50,7 +51,21 @@ Server& Server::operator=(const Server& other)
 
 Server::~Server()
 {
-
+    for (std::map<std::string, ARegisterCommand*>::iterator it = _registerCommand.begin(); it != _registerCommand.end(); ++it)
+        delete it->second;
+    _registerCommand.clear();
+    for (std::map<std::string, AChannelCommand*>::iterator it = _channelCommand.begin(); it != _channelCommand.end(); ++it)
+        delete it->second;
+    _channelCommand.clear();
+    for (std::map<std::string, AMessageCommand*>::iterator it = _messageCommand.begin(); it != _messageCommand.end(); ++it)
+        delete it->second;
+    _messageCommand.clear();
+    for (std::map<int, Client>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+        close(it->first);
+    for (int i = 0; i < _eventCount; ++i)
+        epoll_ctl(_epollFD, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
+    close(_event.data.fd);
+    close(_socketFd);
 }
 
 void Server::hendlePort(const std::string& port)
@@ -114,23 +129,24 @@ void Server::executeCommand(int fd, const std::string& message)
     std::vector<std::string> tmp = Utils::mySplit(message, ' ');
     if (tmp.empty())
         return ;
+    for (std::string::size_type i = 0; i < tmp[0].length(); ++i)
+        tmp[0][i] = std::toupper(tmp[0][i]);
+    if (_messageCommand.find(tmp[0]) != _messageCommand.end())
+        _messageCommand[tmp[0]]->executeCommand(_clients[fd], _clients, _chanels[tmp[1]], fd, tmp);
+    if (_channelCommand.find(tmp[0]) != _channelCommand.end())
+        _channelCommand[tmp[0]]->executeCommand(_clients[fd], _chanels, fd, tmp);        
     if (_registerCommand.find(tmp[0]) != _registerCommand.end())
         _registerCommand[tmp[0]]->executeCommand(_clients[fd], _nickName, fd, tmp);
-    else if (_channelCommand.find(tmp[0]) != _channelCommand.end())
-        _channelCommand[tmp[0]]->executeCommand(_clients[fd], _chanels, fd, tmp);        
-    else if (_messageCommand.find(tmp[0]) != _messageCommand.end())
-    {
-        if (_chanels.find(tmp[1]) != _chanels.end())
-                _messageCommand[tmp[0]]->executeCommand(_clients[fd], _clients, _chanels[tmp[1]], fd, tmp);
-        else
-            Utils::errorBadChanMask(tmp[0], fd);
-    }
 }
 
 void Server::runServer()
 {
     _socketFd = socket(AF_INET, SOCK_STREAM, 0);
-
+    int opt = 1;
+    if (setsockopt(_socketFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+        perror("setsockopt failed");
+        exit(1);
+    }
     setNonblocking(_socketFd);
     _serverAddr.sin_family = AF_INET;
     _serverAddr.sin_port = htons(std::stoi(_port));
@@ -144,21 +160,21 @@ void Server::runServer()
     if (listenStatus == -1)
         throw std::runtime_error("listen failed"); 
         
-    int epollFd = epoll_create1(0);
-    if (epollFd == -1)
+    _epollFD = epoll_create1(0);
+    if (_epollFD == -1)
         throw std::runtime_error("epoll_create1 failed");
     
     _event.events = EPOLLIN;
     _event.data.fd = _socketFd;
 
-    if (epoll_ctl(epollFd, EPOLL_CTL_ADD, _socketFd, &_event) == -1)
+    if (epoll_ctl(_epollFD, EPOLL_CTL_ADD, _socketFd, &_event) == -1)
         throw std::runtime_error("epoll_ctl failed");
 
-    while (true)
+    while (server_runing)
     {
-        _eventCount = epoll_wait(epollFd, _events, MAX_EVENTS, -1);
+        _eventCount = epoll_wait(_epollFD, _events, MAX_EVENTS, -1);
         if (_eventCount == -1)
-            throw std::runtime_error("epoll_wait failed");
+            return ;
         for (int i = 0; i < _eventCount; ++i)
         {
             if (_events[i].data.fd == _socketFd)
@@ -182,7 +198,7 @@ void Server::runServer()
                 ev.data.fd = clientFd;
                 
                 _clients[clientFd] = Client(clientFd, _pass);
-                if (epoll_ctl(epollFd, EPOLL_CTL_ADD, ev.data.fd, &ev) == -1)
+                if (epoll_ctl(_epollFD, EPOLL_CTL_ADD, ev.data.fd, &ev) == -1)
                 {
                     std::cerr << "epoll_ctl failed, (clinet_fd)" << std::endl;
                     close(ev.data.fd);
@@ -213,16 +229,18 @@ void Server::runServer()
                     catch(const std::exception& e)
                     {
                         _clients[_events[i].data.fd].message.clear();
-                        epoll_ctl(epollFd, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
+                        epoll_ctl(_epollFD, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
                         close(_events[i].data.fd);
                     }
                 }
                 if (count == 0)
                 {
                     std::cerr << "Client " << _events[i].data.fd << " disconnect" << std::endl;
-                    _nickName.erase(_clients[_events[i].data.fd].getNick());
-                    _clients.erase(_events[i].data.fd);
-                    epoll_ctl(epollFd, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
+                    if (_nickName.find(_clients[_events[i].data.fd].getNick()) != _nickName.end())
+                        _nickName.erase(_clients[_events[i].data.fd].getNick());
+                    if (_clients.find(_events[i].data.fd) != _clients.end())
+                        _clients.erase(_events[i].data.fd);
+                    epoll_ctl(_epollFD, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
                     close(_events[i].data.fd);
                     break;
                 }
@@ -230,7 +248,11 @@ void Server::runServer()
                 {
                     if (errno != EAGAIN)
                     {
-                        epoll_ctl(epollFd, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
+                        if (_nickName.find(_clients[_events[i].data.fd].getNick()) != _nickName.end())
+                            _nickName.erase(_clients[_events[i].data.fd].getNick());
+                        if (_clients.find(_events[i].data.fd) != _clients.end())
+                            _clients.erase(_events[i].data.fd);
+                        epoll_ctl(_epollFD, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
                         close(_events[i].data.fd);
                     }
                 }

@@ -19,4 +19,5 @@ public:
     static void errorChannelIsFull(const std::string& chanelName, int fd);
     static void errorNoSuchNick(const std::string& chanelName, int fd);
     static void errorNoTestToSend(int fd);
+    static void errorNotOnChannel(const std::string& chanelName, int fd);
 };

@@ -1,18 +1,15 @@
-#pragma once 
+#pragma once
 
-#include "AMessageCommand.hpp"
 #include "../include.hpp"
 #include "../utils.hpp"
+#include "AMessageCommand.hpp"
 
-class Client;
-class Chanel;
-
-class NoticeCommand : public AMessageCommand
+class QuitMessageCommand : public AMessageCommand
 {
 public:
-    NoticeCommand();
-    ~NoticeCommand();
-
+    QuitMessageCommand();
+    ~QuitMessageCommand();
+    
 public:
     void executeCommand(Client& client, std::map<int, Client>& clients, Chanel& chanel, int fd, std::vector<std::string>& message);
 };

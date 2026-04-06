@@ -14,5 +14,5 @@ public:
     ~PrivMsgCommand();
 
 public:
-    void executeCommand(Client& client, const std::map<int, Client>& clients, Chanel& chanel, int fd, std::vector<std::string>& message);
+    void executeCommand(Client& client, std::map<int, Client>& clients, Chanel& chanel, int fd, std::vector<std::string>& message);
 };

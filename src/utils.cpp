@@ -86,3 +86,9 @@ void Utils::errorNoTestToSend(int fd)
     Utils::sendMessage(fd, tmpMsg);
     throw std::runtime_error("");
 }
+
+void Utils::errorNotOnChannel(const std::string& name, int fd)
+{
+    std::string tmpMsg = "localhost 442 " + name + " " + ERR_NOTONCHANNEL + "\r\n";
+    Utils::sendMessage(fd, tmpMsg);
+}
