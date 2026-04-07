@@ -63,7 +63,7 @@ void Utils::errorNoSuchChannel(const std::string& chanelName, int fd)
 {
     std::string tmpMsg = ":localhost 403 " + chanelName + ERR_NOSUCHCHANNEL;
     Utils::sendMessage(fd, tmpMsg);
-    throw std::runtime_error("");
+    // throw std::runtime_error("");
 }
 
 void Utils::errorTooManyChannels(const std::string& chanelName, int fd)

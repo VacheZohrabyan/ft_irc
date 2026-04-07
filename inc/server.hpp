@@ -3,6 +3,8 @@
 #include "include.hpp"
 #include "client.hpp"
 
+#include "administration/modeCommand.hpp"
+
 #include "register/capCommand.hpp"
 #include "register/passCommand.hpp"
 #include "register/nickCommand.hpp"
@@ -13,6 +15,8 @@
 #include "channel/partCommand.hpp"
 #include "channel/joinCommand.hpp"
 #include "channel/quitCommand.hpp"
+#include "channel/namesCommand.hpp"
+#include "channel/listCommand.hpp"
 
 #include "message/privmsgCommand.hpp"
 #include "message/noticeCommand.hpp"
@@ -33,6 +37,7 @@ private:
     struct epoll_event _event;
     struct epoll_event _events[MAX_EVENTS];
     struct sockaddr_in _serverAddr;
+    std::map<std::string, AAdministrationCommand*> _administrativeCommand;
     std::map<std::string, ARegisterCommand*> _registerCommand;
     std::map<std::string, AChannelCommand*> _channelCommand;
     std::map<std::string, AMessageCommand*> _messageCommand;

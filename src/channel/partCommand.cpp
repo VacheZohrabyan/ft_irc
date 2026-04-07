@@ -26,16 +26,16 @@ void PartCommand::executeCommand(Client& client, std::map<std::string, Chanel>& 
                     temp += " ";
                 temp += *it;
             }
-            std::string tmpMsg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getHost() + " PART " + message[1] + temp + "\r\n";
+            std::string tmpMsg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getHost() + " PART " + message[1] + " " + temp + "\r\n";            
             chanel[message[1]].broadCast(tmpMsg, -1);
             chanel[message[1]].removeChanel(fd);
             if (chanel[message[1]].getCountClient() == 0)
                 chanel.erase(message[1]);
         }
         else
-            Utils::errorNotOnChannel(message[1], fd);
+            return Utils::errorNotOnChannel(message[1], fd);
     }
     else
-        Utils::errorNoSuchChannel(message[1], fd);
+        return Utils::errorNoSuchChannel(message[1], fd);
 
 }

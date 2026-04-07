@@ -21,8 +21,8 @@ Server::Server(char** argv) : _socketFd(-1), _epollFD(-1)
     _channelCommand["QUIT"] = new QuitChannelCommand();
     _channelCommand["PART"] = new PartCommand();
     // _channelCommand["TOPIC"] = new TopicCommand();
-    // _channelCommand["NAMES"] = new NamesCommand();
-    // _channelCommand["LIST"] = new ListCommand();
+    _channelCommand["NAMES"] = new NamesCommand();
+    _channelCommand["LIST"] = new ListCommand();
     // _channelCommand["INVITE"] = new InviteCommand();
     // _channelCommand["KICK"] = new KickCommand();
     // Messageing;
@@ -30,7 +30,7 @@ Server::Server(char** argv) : _socketFd(-1), _epollFD(-1)
     _messageCommand["NOTICE"] = new NoticeCommand();
     _messageCommand["QUIT"] = new QuitMessageCommand();
     // Administration
-    // _administrativeCommand["MODE"] = new ModeCommand();
+    _administrativeCommand["MODE"] = new ModeCommand();
     // _administrativeCommand["WHO"] = new WhoCommand();
     // _administrativeCommand["WHOIS"] = new WhoisCommand();
     // _administrativeCommand["OPER"] = new OperCommand();
@@ -60,6 +60,9 @@ Server::~Server()
     for (std::map<std::string, AMessageCommand*>::iterator it = _messageCommand.begin(); it != _messageCommand.end(); ++it)
         delete it->second;
     _messageCommand.clear();
+    for (std::map<std::string, AAdministrationCommand*>::iterator it = _administrativeCommand.begin(); it != _administrativeCommand.end(); ++it)
+        delete it->second;
+    _administrativeCommand.clear();
     for (std::map<int, Client>::iterator it = _clients.begin(); it != _clients.end(); ++it)
         close(it->first);
     for (int i = 0; i < _eventCount; ++i)

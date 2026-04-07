@@ -18,7 +18,6 @@ void QuitChannelCommand::executeCommand(Client& client, std::map<std::string, Ch
     {
         if (it->second.hasClient(fd))
         {
-            std::cout << "message1 = " << message[1] << std::endl;
             std::string temp;
             for (std::vector<std::string>::const_iterator it = message.begin() + 1; it != message.end(); ++it)
             {

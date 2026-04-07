@@ -18,6 +18,7 @@ SRCS = $(SRC_DIR)/main.cpp \
 	   $(SRC_DIR)/server.cpp \
 	   $(SRC_DIR)/utils.cpp \
 	   $(SRC_DIR)/client.cpp \
+	   $(SRC_DIR)/$(ADM_DIR)/modeCommand.cpp \
 	   $(SRC_DIR)/$(REG_DIR)/capCommand.cpp \
 	   $(SRC_DIR)/$(REG_DIR)/passCommand.cpp \
 	   $(SRC_DIR)/$(REG_DIR)/nickCommand.cpp \
@@ -28,6 +29,8 @@ SRCS = $(SRC_DIR)/main.cpp \
 	   $(SRC_DIR)/$(CHA_DIR)/joinCommand.cpp \
 	   $(SRC_DIR)/$(CHA_DIR)/quitCommand.cpp \
 	   $(SRC_DIR)/$(CHA_DIR)/partCommand.cpp \
+	   $(SRC_DIR)/$(CHA_DIR)/namesCommand.cpp \
+	   $(SRC_DIR)/$(CHA_DIR)/listCommand.cpp \
 	   $(SRC_DIR)/$(MES_DIR)/privmsgCommand.cpp \
 	   $(SRC_DIR)/$(MES_DIR)/quitCommand.cpp \
 	   $(SRC_DIR)/$(MES_DIR)/noticeCommand.cpp \
@@ -37,6 +40,7 @@ HEADER = $(INC_DIR)/include.hpp \
 		 $(INC_DIR)/server.hpp \
 		 $(INC_DIR)/client.hpp \
 		 $(INC_DIR)/utils.hpp \
+		 $(INC_DIR)/$(ADM_DIR)/modeCommand.hpp \
 		 $(INC_DIR)/$(REG_DIR)/ARegisterCommand.hpp \
 		 $(INC_DIR)/$(REG_DIR)/capCommand.hpp \
 		 $(INC_DIR)/$(REG_DIR)/passCommand.hpp \
@@ -49,9 +53,11 @@ HEADER = $(INC_DIR)/include.hpp \
 		 $(INC_DIR)/$(CHA_DIR)/joinCommand.hpp \
 		 $(INC_DIR)/$(CHA_DIR)/quitCommand.hpp \
 		 $(INC_DIR)/$(CHA_DIR)/partCommand.hpp \
+		 $(INC_DIR)/$(CHA_DIR)/namesCommand.hpp \
+		 $(INC_DIR)/$(CHA_DIR)/listCommand.hpp \
 	     $(INC_DIR)/$(MES_DIR)/privmsgCommand.hpp \
 	     $(INC_DIR)/$(MES_DIR)/noticeCommand.hpp \
-	     $(INC_DIR)/$(MES_DIR)/quitCommand.hpp \
+	     $(INC_DIR)/$(MES_DIR)/quitCommand.hpp 
 
 
 OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)

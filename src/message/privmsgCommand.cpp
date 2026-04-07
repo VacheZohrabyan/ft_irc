@@ -29,7 +29,6 @@ void PrivMsgCommand::executeCommand(Client& client, std::map<int, Client>& clien
         }
         std::string tmp = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getHost() + " PRIVMSG " + message[1] + " " + temp + "\r\n";
         chanel.broadCast(tmp, fd);
-        std::cout << "tmp = " << tmp;
     }
     else
     {

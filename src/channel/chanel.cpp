@@ -88,3 +88,8 @@ void Chanel::removeChanel(int fd)
     if (fd == _chanelRootFd)
         _chanelRootFd = _clients.begin()->first;
 }
+
+// const std::map<int, std::string>& Chanel::getUserNick() const
+// {
+//     return _clients;
+// }

@@ -30,7 +30,15 @@ public:
     void broadCast(const std::string& message, int all);
     
 public:
+    // const std::map<int, std::string>& getUserNick() const;
     std::string getTopic() const;
     void setTopic(const std::string& topic);
     int getCountClient() const;
+
+private:
+    bool inviteOnly;
+    bool topicProtection;
+    bool chanelPasswd;
+    bool operatorPrivilege;
+    bool userLimit;
 };
