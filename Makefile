@@ -11,6 +11,8 @@ CHA_DIR = channel
 ADM_DIR = administration
 MES_DIR = message
 
+MODE_DIR = mode
+
 OBJ_DIR = obj
 INC_DIR = inc
 
@@ -19,6 +21,11 @@ SRCS = $(SRC_DIR)/main.cpp \
 	   $(SRC_DIR)/utils.cpp \
 	   $(SRC_DIR)/client.cpp \
 	   $(SRC_DIR)/$(ADM_DIR)/modeCommand.cpp \
+	   $(SRC_DIR)/$(ADM_DIR)/$(MODE_DIR)/inviteMode.cpp \
+	   $(SRC_DIR)/$(ADM_DIR)/$(MODE_DIR)/keyMode.cpp \
+	   $(SRC_DIR)/$(ADM_DIR)/$(MODE_DIR)/limitMode.cpp \
+	   $(SRC_DIR)/$(ADM_DIR)/$(MODE_DIR)/operatorMode.cpp \
+	   $(SRC_DIR)/$(ADM_DIR)/$(MODE_DIR)/topicMode.cpp \
 	   $(SRC_DIR)/$(REG_DIR)/capCommand.cpp \
 	   $(SRC_DIR)/$(REG_DIR)/passCommand.cpp \
 	   $(SRC_DIR)/$(REG_DIR)/nickCommand.cpp \
@@ -41,6 +48,12 @@ HEADER = $(INC_DIR)/include.hpp \
 		 $(INC_DIR)/client.hpp \
 		 $(INC_DIR)/utils.hpp \
 		 $(INC_DIR)/$(ADM_DIR)/modeCommand.hpp \
+		 $(INC_DIR)/$(ADM_DIR)/$(MODE_DIR)/AModeCommand.hpp \
+		 $(INC_DIR)/$(ADM_DIR)/$(MODE_DIR)/inviteMode.hpp \
+	     $(INC_DIR)/$(ADM_DIR)/$(MODE_DIR)/keyMode.hpp \
+	     $(INC_DIR)/$(ADM_DIR)/$(MODE_DIR)/limitMode.hpp \
+	     $(INC_DIR)/$(ADM_DIR)/$(MODE_DIR)/operatorMode.hpp \
+	     $(INC_DIR)/$(ADM_DIR)/$(MODE_DIR)/topicMode.hpp \
 		 $(INC_DIR)/$(REG_DIR)/ARegisterCommand.hpp \
 		 $(INC_DIR)/$(REG_DIR)/capCommand.hpp \
 		 $(INC_DIR)/$(REG_DIR)/passCommand.hpp \

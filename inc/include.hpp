@@ -29,3 +29,4 @@
 #define ERR_NOSUCHNICK " :No such nick/channel\r\n"
 #define ERR_NOTEXTTOSEND ":localhost 412 :No text to send\r\n"
 #define ERR_NOTONCHANNEL " :You're not on that channel"
+#define ERR_UNKNOWNMODE " :is unknown mode char to me"

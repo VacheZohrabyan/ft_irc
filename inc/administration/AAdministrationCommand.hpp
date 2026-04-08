@@ -1,7 +1,9 @@
 #pragma once
 
 #include "../../inc/include.hpp"
-#include "../../inc/utils.hpp"
+
+class Chanel;
+class Client;
 
 class AAdministrationCommand
 {
@@ -12,5 +14,5 @@ public:
     }
 
 public:
-    virtual void executeCommand();
+    virtual void executeCommand(Client& client, std::map<std::string, Chanel>& chanels, int fd, std::vector<std::string>& message) = 0;
 };
