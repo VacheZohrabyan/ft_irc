@@ -13,6 +13,8 @@
 #include <set>
 #include <sstream>
 #include <cctype>
+#include <limits>
+#include <ctime>
 
 #define MAX_EVENTS 10
 #define MAX_CHANELL 10
@@ -28,5 +30,6 @@
 #define ERR_CHANNELISFULL " :Cannot join channel (+l)\r\n"
 #define ERR_NOSUCHNICK " :No such nick/channel\r\n"
 #define ERR_NOTEXTTOSEND ":localhost 412 :No text to send\r\n"
-#define ERR_NOTONCHANNEL " :You're not on that channel"
-#define ERR_UNKNOWNMODE " :is unknown mode char to me"
+#define ERR_NOTONCHANNEL " :You're not on that channel\r\n"
+#define ERR_UNKNOWNMODE " :is unknown mode char to me\r\n"
+#define ERR_ERRONEUSNICKNAME " :Erroneus nickname\r\n"

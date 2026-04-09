@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../AAdministrationCommand.hpp"
+#include "../../include.hpp"
 
 class Chanel;
 class Client;
@@ -14,5 +15,5 @@ public:
     }
 
 public:
-    virtual void executeMode(Client& client, std::map<std::string, Chanel>& chanels, int fd, const std::string& message) = 0;
+    virtual void executeMode(Client& client, Chanel& chanels, int fd, const std::string& chanelName, const std::string& message, bool flag) = 0;
 };

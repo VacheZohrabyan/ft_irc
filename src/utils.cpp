@@ -89,12 +89,18 @@ void Utils::errorNoTestToSend(int fd)
 
 void Utils::errorNotOnChannel(const std::string& name, int fd)
 {
-    std::string tmpMsg = "localhost 442 " + name + " " + ERR_NOTONCHANNEL + "\r\n";
+    std::string tmpMsg = ":localhost 442 " + name + " " + ERR_NOTONCHANNEL + "\r\n";
     Utils::sendMessage(fd, tmpMsg);
 }
 
 void Utils::errorUnknownMode(const std::string& c, int fd)
 {
-    std::string tmpMsg = "localhost 472 " + c + " :is unknown mode char to me\r\n";
+    std::string tmpMsg = ":localhost 472 " + c + " :is unknown mode char to me\r\n";
+    Utils::sendMessage(fd, tmpMsg);
+}
+
+void Utils::errorErroneUsNickName(const std::string& nick, int fd)
+{
+    std::string tmpMsg = ":localhost 432 " + nick + ERR_ERRONEUSNICKNAME;
     Utils::sendMessage(fd, tmpMsg);
 }

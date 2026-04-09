@@ -21,4 +21,5 @@ public:
     static void errorNoTestToSend(int fd);
     static void errorNotOnChannel(const std::string& chanelName, int fd);
     static void errorUnknownMode(const std::string& c, int fd);
+    static void errorErroneUsNickName(const std::string& nick, int fd);
 };

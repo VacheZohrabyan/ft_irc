@@ -30,8 +30,11 @@ void JoinCommand::executeCommand(Client& client, std::map<std::string, Chanel>& 
     }
     else
     {
-        if (it->second.getCountClient() == MAX_CLIENT)
-            Utils::errorChannelIsFull(message[1], fd);
+        if (it->second.getLimit())
+        {
+            if (it->second.getCountClient() == it->second.getMaxCount())
+                Utils::errorChannelIsFull(message[1], fd);
+        }
         it->second.addClient(fd, client.getNick());
     }
     std::string joinMessage = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getHost() + " " + message[0] + " :" + message[1] + "\r\n";

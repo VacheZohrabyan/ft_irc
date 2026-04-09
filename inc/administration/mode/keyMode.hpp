@@ -9,5 +9,5 @@ public:
     ~KeyMode();
 
 public:
-    void executeMode(Client& client, std::map<std::string, Chanel>& chanels, int fd, const std::string& message);
+    void executeMode(Client& client, Chanel& chanels, int fd, const std::string& chanelName, const std::string& message, bool flag);
 };
