@@ -104,3 +104,9 @@ void Utils::errorErroneUsNickName(const std::string& nick, int fd)
     std::string tmpMsg = ":localhost 432 " + nick + ERR_ERRONEUSNICKNAME;
     Utils::sendMessage(fd, tmpMsg);
 }
+
+void Utils::errorBadChannelKey(const std::string& nick, int fd)
+{
+    std::string tmpMsg = ":localhost 475 " + nick + ERR_BADCHANNELKEY;
+    Utils::sendMessage(fd, tmpMsg);
+}

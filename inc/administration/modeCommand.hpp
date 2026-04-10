@@ -25,4 +25,5 @@ public:
 
 private:
     std::map<char, AModeCommand*> _modeCommand;
+    bool _adding;
 };

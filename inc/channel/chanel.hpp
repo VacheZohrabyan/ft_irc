@@ -31,6 +31,7 @@ public:
     
 public:
     // const std::map<int, std::string>& getUserNick() const;
+    const std::string& getChanelName() const;
     std::string getTopic() const;
     void setTopic(const std::string& topic);
     std::size_t getCountClient() const;
@@ -38,6 +39,7 @@ public:
     void setMaxCount(std::size_t count);
     int getRootFd() const;
     const std::time_t& getTime() const;
+    const std::string& getChannelPass() const;
 
 private:
     bool _inviteOnly;

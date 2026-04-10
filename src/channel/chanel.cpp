@@ -23,7 +23,15 @@ Chanel::Chanel(const std::string& name, int fd, const std::string& key)
     _chanelName = name;
     _chanelRootFd = fd;
     _chanelkey = key;
+    std::cout << "key = " << key << std::endl;
     _createTime = std::time(nullptr);
+    _inviteOnly = false;
+    if (key.empty())
+        _chanelPasswd = false;
+    else
+        _chanelPasswd = true;
+    _limit = false;
+    _inviteOnly = false;
 }
 
 void Chanel::addClient(int fd, const std::string& nick)
@@ -108,6 +116,16 @@ int Chanel::getRootFd() const
 const std::time_t& Chanel::getTime() const
 {
     return _createTime;
+}
+
+const std::string& Chanel::getChanelName() const
+{
+    return _chanelName;
+}
+
+const std::string& Chanel::getChannelPass() const
+{
+    return _chanelkey;
 }
 
 /// @brief stexic nerqev chgrel 

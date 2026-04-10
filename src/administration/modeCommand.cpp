@@ -20,6 +20,7 @@ ModeCommand::~ModeCommand()
 
 void ModeCommand::executeCommand(Client& client, std::map<std::string, Chanel>& chanels, int fd, std::vector<std::string>& message)
 {
+    std::cout << "mode command fd = " << fd << std::endl;
     if (message.size() == 2)
     {
         if (chanels.find(message[1]) != chanels.end())
@@ -46,24 +47,38 @@ void ModeCommand::executeCommand(Client& client, std::map<std::string, Chanel>& 
     }
     else
     {
-        std::cout << "stex1\n";
-        bool adding = false;
-        if (message[2][0] == '+')
-            adding = true;
+        if (chanels.find(message[1]) == chanels.end())
+            return ;
         std::vector<std::string>::size_type index = 3;
-        for (std::string::size_type i = 1; i < message[2].length(); ++i)
+        std::string::size_type i = 0;
+
+        for (; index <= message.size() && i < message.size(); i++)
         {
+            if (message[2][i] == '+')
+            {
+                _adding = true;
+                continue;
+            }
+            if (message[2][i] == '-')
+            {
+                _adding = false;
+                std::cout << "adding = " << _adding << std::endl;
+                continue;
+            }
             if (_modeCommand.find(message[2][i]) != _modeCommand.end())
             {
-                if ((message[1][0] == '#' || message[1][0] == '&') && chanels.find(message[1]) != chanels.end())
-                    _modeCommand[message[2][i]]->executeMode(client, chanels[message[1]], fd, message[1], ((message.size() <= index) ? "" : message[index++]), adding);
+                if (_adding)
+                {
+                    _modeCommand[message[2][i]]->executeMode(client, chanels[message[1]], fd, message[index++], _adding);
+                    std::cout << "stex4\n";
+                }
+                else
+                {
+                    _modeCommand[message[2][i]]->executeMode(client, chanels[message[1]], fd, "-1", _adding);
+                    std::cout << "stex5\n";
+                }
             }
-            else
-            {
-                std::string tmpMsg;
-                tmpMsg += message[2][i];
-                Utils::errorUnknownMode(tmpMsg, fd);
-            }
-        }
+            std::cout << "stex1\n";
+        }  
     }
 }

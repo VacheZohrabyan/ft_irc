@@ -10,11 +10,10 @@ TopicMode::~TopicMode()
 
 }
 
-void TopicMode::executeMode(Client& client, Chanel& chanels, int fd, const std::string& chanelName, const std::string& message, bool flag)
+void TopicMode::executeMode(Client& client, Chanel& chanels, int fd, const std::string& message, bool flag)
 {
     (void)chanels;
     (void)message;
-    (void)chanelName;
     (void)client;
     (void)fd;
     (void)flag;

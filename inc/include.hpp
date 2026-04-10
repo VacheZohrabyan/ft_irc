@@ -33,3 +33,4 @@
 #define ERR_NOTONCHANNEL " :You're not on that channel\r\n"
 #define ERR_UNKNOWNMODE " :is unknown mode char to me\r\n"
 #define ERR_ERRONEUSNICKNAME " :Erroneus nickname\r\n"
+#define ERR_BADCHANNELKEY " :Cannot join channel (+k)\r\n"

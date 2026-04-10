@@ -22,4 +22,5 @@ public:
     static void errorNotOnChannel(const std::string& chanelName, int fd);
     static void errorUnknownMode(const std::string& c, int fd);
     static void errorErroneUsNickName(const std::string& nick, int fd);
+    static void errorBadChannelKey(const std::string& nick, int fd);
 };
