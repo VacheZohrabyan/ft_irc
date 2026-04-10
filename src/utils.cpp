@@ -77,7 +77,6 @@ void Utils::errorChannelIsFull(const std::string& chanelName, int fd)
 {
     std::string tmpMsg = ":localhost 471 " + chanelName + ERR_CHANNELISFULL;
     Utils::sendMessage(fd, tmpMsg);
-    throw std::runtime_error("");
 }
 
 void Utils::errorNoTestToSend(int fd)
@@ -108,5 +107,24 @@ void Utils::errorErroneUsNickName(const std::string& nick, int fd)
 void Utils::errorBadChannelKey(const std::string& nick, int fd)
 {
     std::string tmpMsg = ":localhost 475 " + nick + ERR_BADCHANNELKEY;
+    std::cout << "tmpMsg = " << tmpMsg;
+    Utils::sendMessage(fd, tmpMsg);
+}
+
+void Utils::errorChanOprivsNeed(const std::string& nick,const std::string& chanelName, int fd)
+{
+    std::string tmpMsg = ":localhost 482 " + nick + " " +chanelName + ERR_CHANOPRIVSNEEDED;
+    Utils::sendMessage(fd, tmpMsg);
+}
+
+void Utils::errorNoSuchNick(const std::string& nick, const std::string& targetNick, int fd)
+{
+    std::string tmpMsg = ":localhost 401 " + nick + " " + targetNick + ERR_NOSUCHNICK;
+    Utils::sendMessage(fd, tmpMsg);
+}
+
+void Utils::errorUserNotInChannel(const std::string& nick, const std::string& chanel, int fd)
+{
+    std::string tmpMsg = ":localhost 441 " + nick + " " + chanel + " " + ERR_USERNOTINCHANNEL;
     Utils::sendMessage(fd, tmpMsg);
 }

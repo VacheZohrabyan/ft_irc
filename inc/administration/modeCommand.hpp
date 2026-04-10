@@ -21,7 +21,7 @@ public:
     ~ModeCommand();
 
 public:
-    void executeCommand(Client& client, std::map<std::string, Chanel>& chanels, int fd, std::vector<std::string>& message);
+    void executeCommand(Client& client, std::map<std::string, Chanel>& chanels, int fd, std::vector<std::string>& message, const std::map<int, Client>& clients);
 
 private:
     std::map<char, AModeCommand*> _modeCommand;

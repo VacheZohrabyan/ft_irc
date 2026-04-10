@@ -135,12 +135,12 @@ void Server::executeCommand(int fd, const std::string& message)
     for (std::string::size_type i = 0; i < tmp[0].length(); ++i)
         tmp[0][i] = std::toupper(tmp[0][i]);
     if (_administrativeCommand.find(tmp[0]) != _administrativeCommand.end())
-        _administrativeCommand[tmp[0]]->executeCommand(_clients[fd], _chanels, fd, tmp);
-    if (_messageCommand.find(tmp[0]) != _messageCommand.end())
+        _administrativeCommand[tmp[0]]->executeCommand(_clients[fd], _chanels, fd, tmp, _clients);
+    else if (_messageCommand.find(tmp[0]) != _messageCommand.end())
         _messageCommand[tmp[0]]->executeCommand(_clients[fd], _clients, _chanels[tmp[1]], fd, tmp);
-    if (_channelCommand.find(tmp[0]) != _channelCommand.end() && isRegistered(_clients[fd], fd))
+    else if (_channelCommand.find(tmp[0]) != _channelCommand.end() && isRegistered(_clients[fd], fd))
         _channelCommand[tmp[0]]->executeCommand(_clients[fd], _chanels, fd, tmp);        
-    if (_registerCommand.find(tmp[0]) != _registerCommand.end())
+    else if (_registerCommand.find(tmp[0]) != _registerCommand.end())
         _registerCommand[tmp[0]]->executeCommand(_clients[fd], _nickName, fd, tmp);
 }
 

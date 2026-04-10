@@ -17,7 +17,7 @@ private:
     std::string _chanelName;
     std::string _chanelkey;
     std::string _chanelTopic;
-    int _chanelRootFd;
+    std::set<int> _chanelRootFd;
     std::size_t _maxCountUser;
     std::map<int, std::string> _clients;
     std::time_t _createTime;
@@ -26,20 +26,24 @@ public:
     void addClient(int fd, const std::string& name);
     void removeChanel(int fd);
     bool hasClient(int fd);
+    bool hasClient(const std::string& nick) const;
     void showAll(int fd, const Client& client);
     void broadCast(const std::string& message, int all);
     
 public:
-    // const std::map<int, std::string>& getUserNick() const;
-    const std::string& getChanelName() const;
-    std::string getTopic() const;
     void setTopic(const std::string& topic);
+    void setMaxCount(std::size_t count);
+    void setChanelKey(const std::string& pass);
+
+public:
+    const std::string& getChanelName() const;
+    const std::string& getChannelPass() const;
+    const std::time_t& getTime() const;
+    std::string getTopic() const;
+    const std::set<int>& getRootFd() const;
+    void removeRootFd(int fd);
     std::size_t getCountClient() const;
     std::size_t getMaxCount() const;
-    void setMaxCount(std::size_t count);
-    int getRootFd() const;
-    const std::time_t& getTime() const;
-    const std::string& getChannelPass() const;
 
 private:
     bool _inviteOnly;
@@ -50,13 +54,15 @@ private:
 
 public:
     bool getLimit() const;
-    void setLimit(bool limit);
     bool getInviteOnly() const;
-    void setInviteOnly(bool inviteOnly);
     bool getTopicProtection() const;
-    void setTopicProtection(bool topicprotection);
     bool getChanelPasswd() const;
+    bool getOperatorPrivilege(int fd) const;
+
+public:
+    void setLimit(bool limit);
+    void setInviteOnly(bool inviteOnly);
+    void setTopicProtection(bool topicprotection);
     void setChanelPasswd(bool chanelPasswd);
-    bool getOperatorPrivilege() const;
-    void setOperatorPrivilege(bool operatorPrivilege);
+    void setOperatorPrivilege(int fd);
 };

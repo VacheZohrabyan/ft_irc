@@ -12,16 +12,13 @@ LimitMode::~LimitMode()
 
 }
 
-void LimitMode::executeMode(Client& client, Chanel& chanel, int fd, const std::string& message, bool flag)
+void LimitMode::executeMode(Client& client, Chanel& chanel, int fd, const std::string& message, bool flag, const std::map<int, Client>& clients)
 {
-    std::cout << chanel.getRootFd() << " " << fd << std::endl;
-    if (chanel.getRootFd() != fd)
+    if (chanel.getRootFd().find(fd) == chanel.getRootFd().end())
         return Utils::errorErroneUsNickName(client.getNick(), fd);
     for (std::string::size_type i = 0; i < message.length(); ++i)
-    {
         if (!std::isdigit(message[i]) && message[i] != '-')
             return ;
-    }
     if (!chanel.getLimit())
     {
         if (flag)
@@ -36,6 +33,7 @@ void LimitMode::executeMode(Client& client, Chanel& chanel, int fd, const std::s
         else
             addLimit(client, chanel, message, flag);
     }
+    (void)clients;
 }
 
 void LimitMode::addLimit(Client& client, Chanel& chanel, const std::string& message, bool flag) const
@@ -45,7 +43,6 @@ void LimitMode::addLimit(Client& client, Chanel& chanel, const std::string& mess
     chanel.setMaxCount(count);
     std::string tmpMsg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getHost() + " MODE " + chanel.getChanelName() + " +l " + std::to_string(chanel.getMaxCount()) + "\r\n";
     chanel.broadCast(tmpMsg, -1);
-    std::cout << "tmpMsg = " << tmpMsg;
 }
 
 void LimitMode::subLimit(Client& client, Chanel& chanel, bool flag) const

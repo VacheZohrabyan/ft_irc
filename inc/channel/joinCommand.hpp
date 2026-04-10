@@ -16,4 +16,7 @@ public:
 
 public:
     void executeCommand(Client& client, std::map<std::string, Chanel>& chanel, int fd, std::vector<std::string>& message);
+
+private:
+    std::string concatPass(const std::vector<std::string>& message) const;
 };

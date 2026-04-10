@@ -21,7 +21,7 @@ Chanel& Chanel::operator=(const Chanel& other)
 Chanel::Chanel(const std::string& name, int fd, const std::string& key)
 {
     _chanelName = name;
-    _chanelRootFd = fd;
+    _chanelRootFd.insert(fd);
     _chanelkey = key;
     std::cout << "key = " << key << std::endl;
     _createTime = std::time(nullptr);
@@ -32,12 +32,15 @@ Chanel::Chanel(const std::string& name, int fd, const std::string& key)
         _chanelPasswd = true;
     _limit = false;
     _inviteOnly = false;
+    _maxCountUser = 10;
 }
 
 void Chanel::addClient(int fd, const std::string& nick)
 {
     if (_clients.find(fd) != _clients.end())
         return;
+    std::cout << _clients.size() << std::endl;
+    std::cout << _maxCountUser << std::endl;
     if (_clients.size() == _maxCountUser)
         Utils::errorChanelIsFull(_chanelName, fd);
     _clients[fd] = nick;
@@ -50,9 +53,8 @@ void Chanel::showAll(int fd, const Client& client)
     {
         if (it != _clients.begin())
             tmpMessage += " ";
-        if (it->first == _chanelRootFd)
+        if (_chanelRootFd.find(it->first) != _chanelRootFd.end())
             tmpMessage += "@";
-
         tmpMessage += it->second;
     }
     tmpMessage += "\r\n";
@@ -76,6 +78,16 @@ bool Chanel::hasClient(int fd)
     return false;
 }
 
+bool Chanel::hasClient(const std::string& nick) const
+{
+    for (std::map<int, std::string>::const_iterator it = _clients.begin(); it != _clients.end(); ++it)
+    {
+        if (it->second == nick)
+            return true;
+    }
+    return false;
+}
+
 std::size_t Chanel::getCountClient() const
 {
     return _clients.size();
@@ -94,8 +106,12 @@ void Chanel::setTopic(const std::string& topic)
 void Chanel::removeChanel(int fd)
 {
     _clients.erase(fd);
-    if (fd == _chanelRootFd)
-        _chanelRootFd = _clients.begin()->first;
+    if (_chanelRootFd.find(fd) != _chanelRootFd.end())
+    {
+        _chanelRootFd.erase(fd);
+        if (_chanelRootFd.size() == 0)
+            _chanelRootFd.insert(_clients.begin()->first);
+    }
 }
 
 void Chanel::setMaxCount(std::size_t count)
@@ -108,7 +124,7 @@ std::size_t Chanel::getMaxCount() const
     return _maxCountUser;
 }
 
-int Chanel::getRootFd() const
+const std::set<int>& Chanel::getRootFd() const
 {
     return _chanelRootFd;
 }
@@ -126,6 +142,18 @@ const std::string& Chanel::getChanelName() const
 const std::string& Chanel::getChannelPass() const
 {
     return _chanelkey;
+}
+
+void Chanel::setChanelKey(const std::string& key)
+{
+    _chanelkey = key;
+}
+
+void Chanel::removeRootFd(int fd)
+{
+    if (_chanelRootFd.size() == 0)
+        return;
+    _chanelRootFd.erase(fd);
 }
 
 /// @brief stexic nerqev chgrel 
@@ -170,14 +198,16 @@ void Chanel::setChanelPasswd(bool chanelPasswd)
     _chanelPasswd = chanelPasswd;
 }
 
-bool Chanel::getOperatorPrivilege() const
+bool Chanel::getOperatorPrivilege(int fd) const
 {
-    return _operatorPrivilege;
+    if (_chanelRootFd.find(fd) != _chanelRootFd.end())
+        return true;
+    return false;
 }
 
-void Chanel::setOperatorPrivilege(bool operatorPrivilege)
+void Chanel::setOperatorPrivilege(int fd)
 {
-    _operatorPrivilege = operatorPrivilege;
+    _chanelRootFd.insert(fd);
 }
 
 // const std::map<int, std::string>& Chanel::getUserNick() const

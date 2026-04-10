@@ -23,4 +23,8 @@ public:
     static void errorUnknownMode(const std::string& c, int fd);
     static void errorErroneUsNickName(const std::string& nick, int fd);
     static void errorBadChannelKey(const std::string& nick, int fd);
+    static void errorChanOprivsNeed(const std::string& nick, const std::string& chanelName, int fd);
+    static void errorNoSuchNick(const std::string& nick, const std::string& targetNick, int fd);
+    static void errorUserNotInChannel(const std::string& nick, const std::string& chanel, int fd);
+
 };

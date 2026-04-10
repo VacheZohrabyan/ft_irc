@@ -18,26 +18,32 @@ ModeCommand::~ModeCommand()
     _modeCommand.clear();
 }
 
-void ModeCommand::executeCommand(Client& client, std::map<std::string, Chanel>& chanels, int fd, std::vector<std::string>& message)
+void ModeCommand::executeCommand(Client& client, std::map<std::string, Chanel>& chanels, int fd, std::vector<std::string>& message, const std::map<int, Client>& clients)
 {
-    std::cout << "mode command fd = " << fd << std::endl;
     if (message.size() == 2)
     {
         if (chanels.find(message[1]) != chanels.end())
         {
             // <client> <channel> <modestring> <mode_params>
             std::string tmpMsg = ":localhost 324 " + client.getNick() + " " + message[1] + " +";
+            std::string numMsg;
             if (chanels[message[1]].getInviteOnly())
                 tmpMsg += "i";
+            if (chanels[message[1]].getChanelPasswd())
+            {
+                tmpMsg += "k";
+                numMsg += " " + chanels[message[1]].getChannelPass();
+            }
             if (chanels[message[1]].getChanelPasswd())
                 tmpMsg += "p"; 
             if (chanels[message[1]].getLimit())
             {
                 std::stringstream ss;
                 ss << chanels[message[1]].getMaxCount();
-                tmpMsg += "l " + ss.str();
+                tmpMsg += "l";
+                numMsg += " " + ss.str();
             }
-            tmpMsg += "\r\n";
+            tmpMsg += numMsg + "\r\n";
             Utils::sendMessage(fd, tmpMsg);
             tmpMsg = ":localhost 329 " + client.getNick() + " " + message[1] + " " + std::to_string(chanels[message[1]].getTime()) + "\r\n";
             Utils::sendMessage(fd, tmpMsg);
@@ -61,24 +67,12 @@ void ModeCommand::executeCommand(Client& client, std::map<std::string, Chanel>& 
             }
             if (message[2][i] == '-')
             {
+                std::cout << "stex2\n";
                 _adding = false;
-                std::cout << "adding = " << _adding << std::endl;
                 continue;
             }
             if (_modeCommand.find(message[2][i]) != _modeCommand.end())
-            {
-                if (_adding)
-                {
-                    _modeCommand[message[2][i]]->executeMode(client, chanels[message[1]], fd, message[index++], _adding);
-                    std::cout << "stex4\n";
-                }
-                else
-                {
-                    _modeCommand[message[2][i]]->executeMode(client, chanels[message[1]], fd, "-1", _adding);
-                    std::cout << "stex5\n";
-                }
-            }
-            std::cout << "stex1\n";
+                _modeCommand[message[2][i]]->executeMode(client, chanels[message[1]], fd, (message[index].empty() ? "" : message[index++]), _adding, clients);
         }  
     }
 }
