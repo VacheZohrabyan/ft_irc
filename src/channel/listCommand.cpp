@@ -12,7 +12,7 @@ ListCommand::~ListCommand()
 
 }
 
-void ListCommand::executeCommand(Client& client, std::map<std::string, Chanel>& chanel, int fd, std::vector<std::string>& message)
+void ListCommand::executeCommand(Client& client, std::map<std::string, Chanel>& chanel, int fd, std::vector<std::string>& message, const std::map<int, Client>& clients)
 {
     // :localhost 321 <nick> Channel :Users  Name
     std::string plainText = ":localhost 321 " + client.getNick() + " Channel :Users  Name" + "\r\n";
@@ -33,6 +33,7 @@ void ListCommand::executeCommand(Client& client, std::map<std::string, Chanel>& 
     }
     // :localhost 323 <nick> :End of /LIST
     std::string endOfList = ":localhost 323 " + client.getNick() + " :End of /LIST\r\n";
+    (void)clients;
 }
 
 void ListCommand::helperFunction(int count, int fd, const std::string& clientNick, const std::string& chanelName, const std::string& topic) const

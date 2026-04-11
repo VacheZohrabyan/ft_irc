@@ -12,7 +12,7 @@ PartCommand::~PartCommand()
 
 }
 
-void PartCommand::executeCommand(Client& client, std::map<std::string, Chanel>& chanel, int fd, std::vector<std::string>& message)
+void PartCommand::executeCommand(Client& client, std::map<std::string, Chanel>& chanel, int fd, std::vector<std::string>& message, const std::map<int, Client>& clients)
 {
     if (chanel.find(message[1]) != chanel.end())
     {
@@ -37,5 +37,5 @@ void PartCommand::executeCommand(Client& client, std::map<std::string, Chanel>& 
     }
     else
         return Utils::errorNoSuchChannel(message[1], fd);
-
+    (void)clients;
 }

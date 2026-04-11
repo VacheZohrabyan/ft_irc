@@ -17,6 +17,8 @@
 #include "channel/quitCommand.hpp"
 #include "channel/namesCommand.hpp"
 #include "channel/listCommand.hpp"
+#include "channel/inviteCommand.hpp"
+#include "channel/kickCommand.hpp"
 
 #include "message/privmsgCommand.hpp"
 #include "message/noticeCommand.hpp"

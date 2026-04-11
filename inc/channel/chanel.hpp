@@ -21,8 +21,10 @@ private:
     std::size_t _maxCountUser;
     std::map<int, std::string> _clients;
     std::time_t _createTime;
+    std::map<int, std::string> _invites;
     
 public:
+    void addInvite(int fd, const std::string& name);
     void addClient(int fd, const std::string& name);
     void removeChanel(int fd);
     bool hasClient(int fd);
@@ -36,14 +38,19 @@ public:
     void setChanelKey(const std::string& pass);
 
 public:
+    void removeRootFd(int fd);
+    void removeInviteList(int fd);
+    void removeClient(int fd);
+
+public:
     const std::string& getChanelName() const;
     const std::string& getChannelPass() const;
     const std::time_t& getTime() const;
     std::string getTopic() const;
     const std::set<int>& getRootFd() const;
-    void removeRootFd(int fd);
     std::size_t getCountClient() const;
     std::size_t getMaxCount() const;
+    const std::map<int, std::string>& getInviteList() const;
 
 private:
     bool _inviteOnly;

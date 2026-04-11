@@ -15,7 +15,7 @@ PrivMsgCommand::~PrivMsgCommand()
 void PrivMsgCommand::executeCommand(Client& client, std::map<int, Client>& clients, Chanel& chanel, int fd, std::vector<std::string>& message)
 {
     if (message.size() < 3)
-        Utils::errorNoSuchNick(message[1], fd);
+        return Utils::errorNoSuchNick(message[1], fd);
     if (message[2].empty())
         Utils::errorNoTestToSend(fd);
     if (message[1][0] == '&' || message[1][0] == '#')

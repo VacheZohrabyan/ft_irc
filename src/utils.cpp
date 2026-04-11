@@ -56,7 +56,7 @@ void Utils::errorNoSuchNick(const std::string& chanelName, int fd)
 {
     std::string tmpMsg = ":localhost 401 " + chanelName + ERR_NOSUCHCHANNEL;
     Utils::sendMessage(fd, tmpMsg);
-    throw std::runtime_error("");
+    // throw std::runtime_error("");
 }
 
 void Utils::errorNoSuchChannel(const std::string& chanelName, int fd)
@@ -126,5 +126,24 @@ void Utils::errorNoSuchNick(const std::string& nick, const std::string& targetNi
 void Utils::errorUserNotInChannel(const std::string& nick, const std::string& chanel, int fd)
 {
     std::string tmpMsg = ":localhost 441 " + nick + " " + chanel + " " + ERR_USERNOTINCHANNEL;
+    Utils::sendMessage(fd, tmpMsg);
+}
+
+void Utils::errorInviteOnlyChan(const std::string& nick, const std::string& chanelName, int fd)
+{
+    std::string tmpMsg = ":localhost 473 " + nick + " " + chanelName + ERR_INVITEONLYCHAN;
+    std::cout << "tmpMsg = " << tmpMsg;
+    Utils::sendMessage(fd, tmpMsg);
+}
+
+void Utils::errorNotOnChannel(const std::string& nick, const std::string chanelName, int fd)
+{
+    std::string tmpMsg = ":localhost 442 " + nick + chanelName + ERR_NOTONCHANNEL;
+    Utils::sendMessage(fd, tmpMsg);
+}
+
+void Utils::errorUserOnChannel(const std::string& user, const std::string& chanelName, int fd)
+{
+    std::string tmpMsg = ":localhost 443 " + user + " " + chanelName + ERR_USERONCHANNEL;
     Utils::sendMessage(fd, tmpMsg);
 }

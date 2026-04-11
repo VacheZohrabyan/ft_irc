@@ -16,7 +16,6 @@ private:
     std::string _real;
     std::string _serverPass;
 
-    
 public:
     std::string message;
 
@@ -31,8 +30,8 @@ public:
     void setHost(const std::string& newHost);
     void setServer(const std::string& newServer);
     void setReal(const std::string& newReal);
-    bool getIsRegistered() const;
     void setIsRegistered(bool is);
+    bool getIsRegistered() const;
     std::string getPass() const;
     std::string getServerPass() const;
     std::string getNick() const;
@@ -40,4 +39,5 @@ public:
     std::string getHost() const;
     std::string getServer() const;
     std::string getReal() const;
+    int getFd() const;
 };

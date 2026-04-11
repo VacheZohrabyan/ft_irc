@@ -12,7 +12,7 @@ JoinCommand::~JoinCommand()
 
 }
 
-void JoinCommand::executeCommand(Client& client, std::map<std::string, Chanel>& chanel, int fd, std::vector<std::string>& message)
+void JoinCommand::executeCommand(Client& client, std::map<std::string, Chanel>& chanel, int fd, std::vector<std::string>& message, const std::map<int, Client>& clients)
 {
 	if (message.size() < 2)
 		Utils::errorMoreParams(client.getNick(), fd);
@@ -33,19 +33,23 @@ void JoinCommand::executeCommand(Client& client, std::map<std::string, Chanel>& 
 			if (it->second.getCountClient() == it->second.getMaxCount())
 				return Utils::errorChannelIsFull(message[1], fd);
 		if (chanel[message[1]].getChanelPasswd())
-		{
 			if (message.size() < 3 || chanel[message[1]].getChannelPass() != concatPass(message))
 				return Utils::errorBadChannelKey(client.getNick() + " " + message[1], fd);
-			std::cout << "stex2\n";
+		if (chanel[message[1]].getInviteOnly())
+		{
+			if (chanel[message[1]].getInviteList().find(client.getFd()) == chanel[message[1]].getInviteList().end())
+				return Utils::errorInviteOnlyChan(client.getNick(), message[1], fd);
+			else
+				chanel[message[1]].removeInviteList(client.getFd());
 		}
 		it->second.addClient(fd, client.getNick());
 	}
-	std::cout << "stex1\n";
 	std::string joinMessage = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getHost() + " " + message[0] + " :" + message[1] + "\r\n";
 	chanel[message[1]].broadCast(joinMessage, -1);
 	joinMessage = ":localhost 332 " + client.getNick() + " " + message[1] + " :" + (chanel[message[1]].getTopic().empty() ? "No topic is set" : chanel[message[1]].getTopic()) + "\r\n";
 	Utils::sendMessage(fd, joinMessage);
-	NamesCommand().executeCommand(client, chanel, fd, message);
+	NamesCommand().executeCommand(client, chanel, fd, message, clients);
+    (void)clients;
 }
 
 std::string JoinCommand::concatPass(const std::vector<std::string>& message) const

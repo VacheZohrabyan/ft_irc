@@ -86,3 +86,8 @@ std::string Client::getReal() const
 {
     return _real;
 }
+
+int Client::getFd() const
+{
+    return _fd;
+}

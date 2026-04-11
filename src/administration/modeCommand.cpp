@@ -71,8 +71,8 @@ void ModeCommand::executeCommand(Client& client, std::map<std::string, Chanel>& 
                 _adding = false;
                 continue;
             }
-            if (_modeCommand.find(message[2][i]) != _modeCommand.end())
-                _modeCommand[message[2][i]]->executeMode(client, chanels[message[1]], fd, (message[index].empty() ? "" : message[index++]), _adding, clients);
+            if (_modeCommand.find(message[2][i]) != _modeCommand.end())                                                                                                                  //hn kardaciq
+                _modeCommand[message[2][i]]->executeMode(client, chanels[message[1]], fd, (((message[2][i] == 'i' || message[2][i] == 't' || (message[2][i] != 'o' && !_adding))) ? "" : message[index++]), _adding, clients);
         }  
     }
 }

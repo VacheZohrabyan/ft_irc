@@ -23,8 +23,8 @@ Server::Server(char** argv) : _socketFd(-1), _epollFD(-1)
     // _channelCommand["TOPIC"] = new TopicCommand();
     _channelCommand["NAMES"] = new NamesCommand();
     _channelCommand["LIST"] = new ListCommand();
-    // _channelCommand["INVITE"] = new InviteCommand();
-    // _channelCommand["KICK"] = new KickCommand();
+    _channelCommand["INVITE"] = new InviteCommand();
+    _channelCommand["KICK"] = new KickCommand();//chexav
     // Messageing;
     _messageCommand["PRIVMSG"] = new PrivMsgCommand();
     _messageCommand["NOTICE"] = new NoticeCommand();
@@ -136,11 +136,11 @@ void Server::executeCommand(int fd, const std::string& message)
         tmp[0][i] = std::toupper(tmp[0][i]);
     if (_administrativeCommand.find(tmp[0]) != _administrativeCommand.end())
         _administrativeCommand[tmp[0]]->executeCommand(_clients[fd], _chanels, fd, tmp, _clients);
-    else if (_messageCommand.find(tmp[0]) != _messageCommand.end())
+    if (_messageCommand.find(tmp[0]) != _messageCommand.end())
         _messageCommand[tmp[0]]->executeCommand(_clients[fd], _clients, _chanels[tmp[1]], fd, tmp);
-    else if (_channelCommand.find(tmp[0]) != _channelCommand.end() && isRegistered(_clients[fd], fd))
-        _channelCommand[tmp[0]]->executeCommand(_clients[fd], _chanels, fd, tmp);        
-    else if (_registerCommand.find(tmp[0]) != _registerCommand.end())
+    if (_channelCommand.find(tmp[0]) != _channelCommand.end() && isRegistered(_clients[fd], fd))
+        _channelCommand[tmp[0]]->executeCommand(_clients[fd], _chanels, fd, tmp, _clients);        
+    if (_registerCommand.find(tmp[0]) != _registerCommand.end())
         _registerCommand[tmp[0]]->executeCommand(_clients[fd], _nickName, fd, tmp);
 }
 

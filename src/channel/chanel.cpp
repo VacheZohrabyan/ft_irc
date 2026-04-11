@@ -35,6 +35,11 @@ Chanel::Chanel(const std::string& name, int fd, const std::string& key)
     _maxCountUser = 10;
 }
 
+void Chanel::addInvite(int fd, const std::string& nick)
+{
+    _invites[fd] = nick;
+}
+
 void Chanel::addClient(int fd, const std::string& nick)
 {
     if (_clients.find(fd) != _clients.end())
@@ -114,6 +119,17 @@ void Chanel::removeChanel(int fd)
     }
 }
 
+void Chanel::removeClient(int fd)
+{
+    std::cout << "size = " << _clients[fd].size() << std::endl;
+    std::cout << "nick = " << _clients[fd] << std::endl;
+    if (_chanelRootFd.find(fd) != _chanelRootFd.end())
+        _chanelRootFd.erase(fd);
+    
+    if (_clients.find(fd) != _clients.end())
+        _clients.erase(fd);
+}
+
 void Chanel::setMaxCount(std::size_t count)
 {
     _maxCountUser = count;
@@ -154,6 +170,17 @@ void Chanel::removeRootFd(int fd)
     if (_chanelRootFd.size() == 0)
         return;
     _chanelRootFd.erase(fd);
+}
+
+void Chanel::removeInviteList(int fd)
+{
+    if (_invites.find(fd) != _invites.end())
+        _invites.erase(fd);
+}
+
+const std::map<int, std::string>& Chanel::getInviteList() const
+{
+    return _invites;
 }
 
 /// @brief stexic nerqev chgrel 

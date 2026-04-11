@@ -38,6 +38,8 @@ SRCS = $(SRC_DIR)/main.cpp \
 	   $(SRC_DIR)/$(CHA_DIR)/partCommand.cpp \
 	   $(SRC_DIR)/$(CHA_DIR)/namesCommand.cpp \
 	   $(SRC_DIR)/$(CHA_DIR)/listCommand.cpp \
+	   $(SRC_DIR)/$(CHA_DIR)/inviteCommand.cpp \
+	   $(SRC_DIR)/$(CHA_DIR)/kickCommand.cpp \
 	   $(SRC_DIR)/$(MES_DIR)/privmsgCommand.cpp \
 	   $(SRC_DIR)/$(MES_DIR)/quitCommand.cpp \
 	   $(SRC_DIR)/$(MES_DIR)/noticeCommand.cpp \
@@ -68,6 +70,8 @@ HEADER = $(INC_DIR)/include.hpp \
 		 $(INC_DIR)/$(CHA_DIR)/partCommand.hpp \
 		 $(INC_DIR)/$(CHA_DIR)/namesCommand.hpp \
 		 $(INC_DIR)/$(CHA_DIR)/listCommand.hpp \
+		 $(INC_DIR)/$(CHA_DIR)/inviteCommand.hpp \
+		 $(INC_DIR)/$(CHA_DIR)/kickCommand.hpp \
 	     $(INC_DIR)/$(MES_DIR)/privmsgCommand.hpp \
 	     $(INC_DIR)/$(MES_DIR)/noticeCommand.hpp \
 	     $(INC_DIR)/$(MES_DIR)/quitCommand.hpp 

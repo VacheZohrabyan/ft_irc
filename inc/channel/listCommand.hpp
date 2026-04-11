@@ -11,7 +11,7 @@ public:
     ~ListCommand();
 
 public:
-    void executeCommand(Client& client, std::map<std::string, Chanel>& chanel, int fd, std::vector<std::string>& message);
+    void executeCommand(Client& client, std::map<std::string, Chanel>& chanel, int fd, std::vector<std::string>& message, const std::map<int, Client>& clients);
 
 private:
     void helperFunction(int count, int fd, const std::string& nick_1, const std::string& chanelName, const std::string& topic) const;

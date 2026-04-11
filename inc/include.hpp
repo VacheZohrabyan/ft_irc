@@ -37,3 +37,6 @@
 #define ERR_CHANOPRIVSNEEDED " :You're not channel operator\r\n"
 #define ERR_NOSUCHNICK " :No such nick/channel\r\n"
 #define ERR_USERNOTINCHANNEL " :They aren't on that channel\r\n"
+#define ERR_INVITEONLYCHAN " :Cannot join channel (+i)\r\n"
+#define ERR_NOTONCHANNEL " :You're not on that channel\r\n"
+#define ERR_USERONCHANNEL " :is already on channel\r\n"
