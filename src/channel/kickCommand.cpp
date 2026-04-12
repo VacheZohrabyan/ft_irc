@@ -26,13 +26,11 @@ void KickCommand::executeCommand(Client& client, std::map<std::string, Chanel>& 
         return Utils::errorUserNotInChannel(message[2], message[1], fd);
     // :[Sender_Nick]![User]@[Host] KICK [Channel_Name] [Target_Nick] :[Reason]
     std::string tmp = concatMessage(message); 
-    std::cout << "tmp = " << tmp << std::endl;
-    std::string tmpMsg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getHost() + " KICK " + message[1] + " " + message[2] + " " + (tmp.size() == 1 ? ":" + message[2] : tmp) + "\r\n";
-    std::cout << "tmpMsg = " << tmpMsg << ":";
-    std::cout << "kickname = " << message[2] << std::endl; 
-    std::cout << "kicksize = " << message[2].size() << std::endl; 
+    std::string tmpMsg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getHost() + " KICK " + message[1] + " " + message[2] + " " + (tmp.size() == 1 ? (":" + message[2]) : tmp) + "\r\n";
     chanel[message[1]].broadCast(tmpMsg, -1);
     chanel[message[1]].removeClient(findClient(message[2], clients));
+    if (chanel[message[1]].getCountClient() == 0)
+        chanel.erase(message[1]);
 }
 
 std::string KickCommand::concatMessage(const std::vector<std::string>& message) const

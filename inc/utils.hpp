@@ -29,5 +29,6 @@ public:
     static void errorInviteOnlyChan(const std::string& nick, const std::string& chanelName, int fd);
     static void errorNotOnChannel(const std::string& nick, const std::string chanelName, int fd);
     static void errorUserOnChannel(const std::string& user, const std::string& chanelName, int fd);
+    static void errorNoNickNameGiven(int fd);
 
 };

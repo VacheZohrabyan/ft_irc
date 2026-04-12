@@ -33,9 +33,7 @@ void Utils::errorAlreadyRegister(const std::string& nick, int fd)
 void Utils::errorNickNameInUse(const std::string& nick, int fd)
 {
     std::string tmpMsg = ":localhost 433 * " + nick + ERR_NICKNAMEINUSE;
-    // std::string tmpMsg = ":localhost 433 " + nick + nick + " :Nickname is already in use\r\n";
     Utils::sendMessage(fd, tmpMsg);
-    // throw std::runtime_error("errorNickNameInUse");
 }
 
 void Utils::errorChanelIsFull(const std::string& chanelName, int fd)
@@ -107,7 +105,6 @@ void Utils::errorErroneUsNickName(const std::string& nick, int fd)
 void Utils::errorBadChannelKey(const std::string& nick, int fd)
 {
     std::string tmpMsg = ":localhost 475 " + nick + ERR_BADCHANNELKEY;
-    std::cout << "tmpMsg = " << tmpMsg;
     Utils::sendMessage(fd, tmpMsg);
 }
 
@@ -132,7 +129,6 @@ void Utils::errorUserNotInChannel(const std::string& nick, const std::string& ch
 void Utils::errorInviteOnlyChan(const std::string& nick, const std::string& chanelName, int fd)
 {
     std::string tmpMsg = ":localhost 473 " + nick + " " + chanelName + ERR_INVITEONLYCHAN;
-    std::cout << "tmpMsg = " << tmpMsg;
     Utils::sendMessage(fd, tmpMsg);
 }
 
@@ -145,5 +141,11 @@ void Utils::errorNotOnChannel(const std::string& nick, const std::string chanelN
 void Utils::errorUserOnChannel(const std::string& user, const std::string& chanelName, int fd)
 {
     std::string tmpMsg = ":localhost 443 " + user + " " + chanelName + ERR_USERONCHANNEL;
+    Utils::sendMessage(fd, tmpMsg);
+}
+
+void Utils::errorNoNickNameGiven(int fd)
+{
+    std::string tmpMsg = ":localhost 431" + std::string(ERR_NONICKNAMEGIVEN);
     Utils::sendMessage(fd, tmpMsg);
 }

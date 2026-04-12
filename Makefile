@@ -12,6 +12,7 @@ ADM_DIR = administration
 MES_DIR = message
 
 MODE_DIR = mode
+OPER_DIR = operMode
 
 OBJ_DIR = obj
 INC_DIR = inc
@@ -20,7 +21,15 @@ SRCS = $(SRC_DIR)/main.cpp \
 	   $(SRC_DIR)/server.cpp \
 	   $(SRC_DIR)/utils.cpp \
 	   $(SRC_DIR)/client.cpp \
+	   $(SRC_DIR)/$(ADM_DIR)/$(OPER_DIR)/killMode.hpp \
+	   $(SRC_DIR)/$(ADM_DIR)/$(OPER_DIR)/rehashMode.hpp \
+	   $(SRC_DIR)/$(ADM_DIR)/$(OPER_DIR)/restartMode.hpp \
+	   $(SRC_DIR)/$(ADM_DIR)/$(OPER_DIR)/sQuitMode.hpp \
+	   $(SRC_DIR)/$(ADM_DIR)/$(OPER_DIR)/wallopsMode.hpp \
 	   $(SRC_DIR)/$(ADM_DIR)/modeCommand.cpp \
+	   $(SRC_DIR)/$(ADM_DIR)/whoCommand.cpp \
+	   $(SRC_DIR)/$(ADM_DIR)/whoisCommand.cpp \
+	   $(SRC_DIR)/$(ADM_DIR)/operCommand.cpp \
 	   $(SRC_DIR)/$(ADM_DIR)/$(MODE_DIR)/inviteMode.cpp \
 	   $(SRC_DIR)/$(ADM_DIR)/$(MODE_DIR)/keyMode.cpp \
 	   $(SRC_DIR)/$(ADM_DIR)/$(MODE_DIR)/limitMode.cpp \
@@ -49,7 +58,15 @@ HEADER = $(INC_DIR)/include.hpp \
 		 $(INC_DIR)/server.hpp \
 		 $(INC_DIR)/client.hpp \
 		 $(INC_DIR)/utils.hpp \
+		 $(INC_DIR)/$(ADM_DIR)/$(OPER_DIR)/killMode.hpp \
+		 $(INC_DIR)/$(ADM_DIR)/$(OPER_DIR)/rehashMode.hpp \
+		 $(INC_DIR)/$(ADM_DIR)/$(OPER_DIR)/restartMode.hpp \
+		 $(INC_DIR)/$(ADM_DIR)/$(OPER_DIR)/sQuitMode.hpp \
+		 $(INC_DIR)/$(ADM_DIR)/$(OPER_DIR)/wallopsMode.hpp \
 		 $(INC_DIR)/$(ADM_DIR)/modeCommand.hpp \
+		 $(INC_DIR)/$(ADM_DIR)/whoCommand.hpp \
+		 $(INC_DIR)/$(ADM_DIR)/whoisCommand.hpp \
+		 $(INC_DIR)/$(ADM_DIR)/operCommand.hpp \
 		 $(INC_DIR)/$(ADM_DIR)/$(MODE_DIR)/AModeCommand.hpp \
 		 $(INC_DIR)/$(ADM_DIR)/$(MODE_DIR)/inviteMode.hpp \
 	     $(INC_DIR)/$(ADM_DIR)/$(MODE_DIR)/keyMode.hpp \

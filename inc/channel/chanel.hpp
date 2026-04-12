@@ -51,6 +51,7 @@ public:
     std::size_t getCountClient() const;
     std::size_t getMaxCount() const;
     const std::map<int, std::string>& getInviteList() const;
+    const std::map<int, std::string>& getChanelClients() const;
 
 private:
     bool _inviteOnly;

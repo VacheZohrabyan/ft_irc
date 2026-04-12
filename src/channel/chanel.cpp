@@ -23,7 +23,6 @@ Chanel::Chanel(const std::string& name, int fd, const std::string& key)
     _chanelName = name;
     _chanelRootFd.insert(fd);
     _chanelkey = key;
-    std::cout << "key = " << key << std::endl;
     _createTime = std::time(nullptr);
     _inviteOnly = false;
     if (key.empty())
@@ -44,8 +43,6 @@ void Chanel::addClient(int fd, const std::string& nick)
 {
     if (_clients.find(fd) != _clients.end())
         return;
-    std::cout << _clients.size() << std::endl;
-    std::cout << _maxCountUser << std::endl;
     if (_clients.size() == _maxCountUser)
         Utils::errorChanelIsFull(_chanelName, fd);
     _clients[fd] = nick;
@@ -121,8 +118,6 @@ void Chanel::removeChanel(int fd)
 
 void Chanel::removeClient(int fd)
 {
-    std::cout << "size = " << _clients[fd].size() << std::endl;
-    std::cout << "nick = " << _clients[fd] << std::endl;
     if (_chanelRootFd.find(fd) != _chanelRootFd.end())
         _chanelRootFd.erase(fd);
     
@@ -181,6 +176,11 @@ void Chanel::removeInviteList(int fd)
 const std::map<int, std::string>& Chanel::getInviteList() const
 {
     return _invites;
+}
+
+const std::map<int, std::string>& Chanel::getChanelClients() const
+{
+    return _clients;
 }
 
 /// @brief stexic nerqev chgrel 

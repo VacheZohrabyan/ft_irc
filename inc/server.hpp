@@ -4,6 +4,9 @@
 #include "client.hpp"
 
 #include "administration/modeCommand.hpp"
+#include "administration/whoCommand.hpp"
+#include "administration/whoisCommand.hpp"
+#include "administration/operCommand.hpp"
 
 #include "register/capCommand.hpp"
 #include "register/passCommand.hpp"
@@ -31,6 +34,8 @@ class Server
 private:
     std::string _port;
     std::string _pass;
+    const std::string serverPass;
+    const std::string serverLog;
 
 private:
     int _socketFd;

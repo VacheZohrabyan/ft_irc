@@ -37,7 +37,6 @@ void OperatorMode::executeMode(Client& client, Chanel& chanel, int fd, const std
     {
         chanel.removeRootFd(getFd(clients,message));
         std::string tmpMsg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getHost() + " MODE " + chanel.getChanelName() + " -o " + message + "\r\n";
-        std::cout << "tmpMsg = " << tmpMsg;
         chanel.broadCast(tmpMsg, -1);
     }
 }
@@ -52,7 +51,6 @@ bool OperatorMode::findNick(const std::map<int, Client>& clients, const std::str
 
 int OperatorMode::getFd(const std::map<int, Client>& clients, const std::string& message) const
 {
-    std::cout << "message = " << message << std::endl;
     for (std::map<int, Client>::const_iterator it = clients.begin(); it != clients.end(); ++it)
         if (it->second.getNick() == message)
             return it->first;

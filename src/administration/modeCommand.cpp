@@ -67,7 +67,6 @@ void ModeCommand::executeCommand(Client& client, std::map<std::string, Chanel>& 
             }
             if (message[2][i] == '-')
             {
-                std::cout << "stex2\n";
                 _adding = false;
                 continue;
             }

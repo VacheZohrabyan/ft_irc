@@ -5,7 +5,7 @@ Server::Server()
 {
 }
 
-Server::Server(char** argv) : _socketFd(-1), _epollFD(-1)
+Server::Server(char** argv) : serverPass("12345"), serverLog("12345"), _socketFd(-1), _epollFD(-1)
 {
     hendlePort(argv[1]);
     hendlePass(argv[2]);
@@ -31,9 +31,9 @@ Server::Server(char** argv) : _socketFd(-1), _epollFD(-1)
     _messageCommand["QUIT"] = new QuitMessageCommand();
     // Administration
     _administrativeCommand["MODE"] = new ModeCommand();
-    // _administrativeCommand["WHO"] = new WhoCommand();
-    // _administrativeCommand["WHOIS"] = new WhoisCommand();
-    // _administrativeCommand["OPER"] = new OperCommand();
+    _administrativeCommand["WHO"] = new WhoCommand();
+    _administrativeCommand["WHOIS"] = new WhoisCommand();
+    _administrativeCommand["OPER"] = new OperCommand();
     // _administrativeCommand["KILL"] = new KillCommand();
 }
 
