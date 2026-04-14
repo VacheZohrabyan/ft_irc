@@ -9,14 +9,13 @@ Server::Server(char** argv) : serverPass("12345"), serverLog("12345"), _socketFd
 {
     hendlePort(argv[1]);
     hendlePass(argv[2]);
-    //register
     _registerCommand["CAP"] = new CapCommand();
     _registerCommand["PASS"] = new PassCommand();
     _registerCommand["NICK"] = new NickCommand();
     _registerCommand["USER"] = new UserCommand();
     _registerCommand["PING"] = new PingCommand();
     _registerCommand["QUIT"] = new QuitRegisterCommand();
-    // channel
+
     _channelCommand["JOIN"] = new JoinCommand();
     _channelCommand["QUIT"] = new QuitChannelCommand();
     _channelCommand["PART"] = new PartCommand();
@@ -25,11 +24,11 @@ Server::Server(char** argv) : serverPass("12345"), serverLog("12345"), _socketFd
     _channelCommand["LIST"] = new ListCommand();
     _channelCommand["INVITE"] = new InviteCommand();
     _channelCommand["KICK"] = new KickCommand();//chexav
-    // Messageing;
+
     _messageCommand["PRIVMSG"] = new PrivMsgCommand();
     _messageCommand["NOTICE"] = new NoticeCommand();
     _messageCommand["QUIT"] = new QuitMessageCommand();
-    // Administration
+
     _administrativeCommand["MODE"] = new ModeCommand();
     _administrativeCommand["WHO"] = new WhoCommand();
     _administrativeCommand["WHOIS"] = new WhoisCommand();
@@ -218,25 +217,25 @@ void Server::runServer()
                 {
                     _clients[_events[i].data.fd].message.append(buffer, count);
                     std::memset(buffer, 0x0, 512);
-                    try
+                }
+                try
+                {
+                    std::string::size_type pos;
+                    while ((pos = _clients[_events[i].data.fd].message.find("\r\n")) != std::string::npos)
                     {
-                        std::string::size_type pos;
-                        while ((pos = _clients[_events[i].data.fd].message.find("\r\n")) != std::string::npos)
-                        {
-                            std::string tmp = _clients[_events[i].data.fd].message.substr(0, pos);
-                            std::cout << "command = " << tmp << std::endl;
-                            executeCommand(_events[i].data.fd, tmp);
-                            _clients[_events[i].data.fd].message.erase(0, pos + 2);
-                        }
-                        if (isRegistered(_clients[_events[i].data.fd], _events[i].data.fd) && !_clients[_events[i].data.fd].getIsRegistered())
-                            _clients[_events[i].data.fd].setIsRegistered(true);
+                        std::string tmp = _clients[_events[i].data.fd].message.substr(0, pos);
+                        std::cout << "command = " << tmp << std::endl;
+                        executeCommand(_events[i].data.fd, tmp);
+                        _clients[_events[i].data.fd].message.erase(0, pos + 2);
                     }
-                    catch(const std::exception& e)
-                    {
-                        _clients[_events[i].data.fd].message.clear();
-                        epoll_ctl(_epollFD, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
-                        close(_events[i].data.fd);
-                    }
+                    if (isRegistered(_clients[_events[i].data.fd], _events[i].data.fd) && !_clients[_events[i].data.fd].getIsRegistered())
+                        _clients[_events[i].data.fd].setIsRegistered(true);
+                }
+                catch(const std::exception& e)
+                {
+                    _clients[_events[i].data.fd].message.clear();
+                    epoll_ctl(_epollFD, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
+                    close(_events[i].data.fd);
                 }
                 if (count == 0)
                 {

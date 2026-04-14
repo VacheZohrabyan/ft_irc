@@ -2,14 +2,14 @@
 
 OperCommand::OperCommand()
 {
-    _mode["KILL"]
-    _mode["REHASH"]
-    _mode["RESTART"]
-    _mode["SQUIT"]
-    _mode["WALLOPS"]
-    _mode["DIE"]
-    _mode["CONNECT"]
-    _mode["STATS"]
+    // _mode["KILL"] = new KillCommand();
+    // _mode["REHASH"] = new RehashCommand();
+    // _mode["RESTART"] = new RestartCommand();
+    // _mode["SQUIT"] = new SQuitCommand();
+    // _mode["WALLOPS"] = new WallopsCommand();
+    // _mode["DIE"] = new DieCommand();
+    // _mode["CONNECT"] = new ConnectCommand();
+    // _mode["STATS"] = new StatsCommand();
 }
 
 OperCommand::~OperCommand()
@@ -19,6 +19,9 @@ OperCommand::~OperCommand()
 
 void OperCommand::executeCommand(Client& client, std::map<std::string, Chanel>& chanels, int fd, std::vector<std::string>& message, const std::map<int, Client>& clients)
 {
-    std::map<int, Client>& clientss = const_cast<std::map<int, Client>&>(clients);
-
+    (void)client;
+    (void)clients;
+    (void)chanels;
+    (void)message;
+    (void)fd;
 }

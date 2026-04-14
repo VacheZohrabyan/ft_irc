@@ -24,7 +24,6 @@ void ModeCommand::executeCommand(Client& client, std::map<std::string, Chanel>& 
     {
         if (chanels.find(message[1]) != chanels.end())
         {
-            // <client> <channel> <modestring> <mode_params>
             std::string tmpMsg = ":localhost 324 " + client.getNick() + " " + message[1] + " +";
             std::string numMsg;
             if (chanels[message[1]].getInviteOnly())
@@ -55,10 +54,11 @@ void ModeCommand::executeCommand(Client& client, std::map<std::string, Chanel>& 
     {
         if (chanels.find(message[1]) == chanels.end())
             return ;
+        if (message.size() < 3 || message[2].empty())
+            return ;
         std::vector<std::string>::size_type index = 3;
-        std::string::size_type i = 0;
-
-        for (; index <= message.size() && i < message.size(); i++)
+        _adding = false;
+        for (std::string::size_type i = 0; index <= message.size() && i < message[2].size(); i++)
         {
             if (message[2][i] == '+')
             {
@@ -70,8 +70,16 @@ void ModeCommand::executeCommand(Client& client, std::map<std::string, Chanel>& 
                 _adding = false;
                 continue;
             }
-            if (_modeCommand.find(message[2][i]) != _modeCommand.end())                                                                                                                  //hn kardaciq
-                _modeCommand[message[2][i]]->executeMode(client, chanels[message[1]], fd, (((message[2][i] == 'i' || message[2][i] == 't' || (message[2][i] != 'o' && !_adding))) ? "" : message[index++]), _adding, clients);
+            if (_modeCommand.find(message[2][i]) != _modeCommand.end())
+            {
+                bool param = (message[2][i] == 'o' || (message[2][i] == 'k' && _adding) || (message[2][i] == 'l' && _adding));
+                if (message[2][i] == 'o')
+                    param = true;
+                std::string parameter = "";
+                if (param && message.size() > index && !message[index].empty())
+                    parameter = message[index++];
+                _modeCommand[message[2][i]]->executeMode(client, chanels[message[1]], fd, parameter, _adding, clients);
+            }
         }  
     }
 }

@@ -18,7 +18,6 @@ void PartCommand::executeCommand(Client& client, std::map<std::string, Chanel>& 
     {
         if (chanel[message[1]].hasClient(fd))
         {
-            // :<nick>!<user>@<host> PART #channel :<reason>\r\n
             std::string temp;
             for (std::vector<std::string>::const_iterator it = message.begin() + 2; it != message.end(); ++it)
             {

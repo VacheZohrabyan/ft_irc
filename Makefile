@@ -21,11 +21,11 @@ SRCS = $(SRC_DIR)/main.cpp \
 	   $(SRC_DIR)/server.cpp \
 	   $(SRC_DIR)/utils.cpp \
 	   $(SRC_DIR)/client.cpp \
-	   $(SRC_DIR)/$(ADM_DIR)/$(OPER_DIR)/killMode.hpp \
-	   $(SRC_DIR)/$(ADM_DIR)/$(OPER_DIR)/rehashMode.hpp \
-	   $(SRC_DIR)/$(ADM_DIR)/$(OPER_DIR)/restartMode.hpp \
-	   $(SRC_DIR)/$(ADM_DIR)/$(OPER_DIR)/sQuitMode.hpp \
-	   $(SRC_DIR)/$(ADM_DIR)/$(OPER_DIR)/wallopsMode.hpp \
+	   $(SRC_DIR)/$(ADM_DIR)/$(OPER_DIR)/killMode.cpp \
+	   $(SRC_DIR)/$(ADM_DIR)/$(OPER_DIR)/rehashMode.cpp \
+	   $(SRC_DIR)/$(ADM_DIR)/$(OPER_DIR)/restartMode.cpp \
+	   $(SRC_DIR)/$(ADM_DIR)/$(OPER_DIR)/sQuitMode.cpp \
+	   $(SRC_DIR)/$(ADM_DIR)/$(OPER_DIR)/wallopsMode.cpp \
 	   $(SRC_DIR)/$(ADM_DIR)/modeCommand.cpp \
 	   $(SRC_DIR)/$(ADM_DIR)/whoCommand.cpp \
 	   $(SRC_DIR)/$(ADM_DIR)/whoisCommand.cpp \

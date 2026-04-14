@@ -18,7 +18,6 @@ void TopicMode::executeMode(Client& client, Chanel& chanel, int fd, const std::s
         return Utils::errorChanOprivsNeed(client.getNick(), chanel.getChanelName(), fd);
     if (flag)
     {
-        // :vzohraby!user@host MODE #test +i
         chanel.setTopicProtection(flag);
         std::string tmpMsg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getHost() + " MODE " + chanel.getChanelName() + " +t\r\n";
         chanel.broadCast(tmpMsg, -1); 

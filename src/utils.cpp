@@ -54,14 +54,12 @@ void Utils::errorNoSuchNick(const std::string& chanelName, int fd)
 {
     std::string tmpMsg = ":localhost 401 " + chanelName + ERR_NOSUCHCHANNEL;
     Utils::sendMessage(fd, tmpMsg);
-    // throw std::runtime_error("");
 }
 
 void Utils::errorNoSuchChannel(const std::string& chanelName, int fd)
 {
     std::string tmpMsg = ":localhost 403 " + chanelName + ERR_NOSUCHCHANNEL;
     Utils::sendMessage(fd, tmpMsg);
-    // throw std::runtime_error("");
 }
 
 void Utils::errorTooManyChannels(const std::string& chanelName, int fd)
@@ -147,5 +145,11 @@ void Utils::errorUserOnChannel(const std::string& user, const std::string& chane
 void Utils::errorNoNickNameGiven(int fd)
 {
     std::string tmpMsg = ":localhost 431" + std::string(ERR_NONICKNAMEGIVEN);
+    Utils::sendMessage(fd, tmpMsg);
+}
+
+void Utils::errorkeySet(const std::string& chanelName, int fd)
+{
+    std::string tmpMsg = ":localhost 467 " + chanelName + ERR_KEYSET;
     Utils::sendMessage(fd, tmpMsg);
 }

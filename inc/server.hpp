@@ -65,9 +65,8 @@ private:
     void executeCommand(int fd, const std::string& message);
     int setNonblocking(int fd);
     
-    private:
+private:
     bool isRegistered(Client& client, int fd);
-    
     
 public:
     void runServer();

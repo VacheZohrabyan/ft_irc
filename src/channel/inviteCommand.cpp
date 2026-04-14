@@ -22,16 +22,13 @@ void InviteCommand::executeCommand(Client& client, std::map<std::string, Chanel>
             return Utils::errorNotOnChannel(client.getNick(), message[2], fd);
         else if (chanel[message[2]].hasClient(message[1]))
             return Utils::errorUserOnChannel(client.getUser(), message[2], fd);
-        // else if (chanel[message[2]].getRootFd().find(findRootChanel(message[1], clients)) == chanel[message[2]].getRootFd().end())
         else if (chanel[message[2]].getRootFd().find(client.getFd()) == chanel[message[2]].getRootFd().end())
             return Utils::errorChanOprivsNeed(client.getNick(), message[2], fd);
     }
     else    
         return Utils::errorNoSuchChannel(message[2], fd);
-    // :localhost 341 <nick> <target_nick> #channel
     std::string tmpMsg = ":localhost 341 " + client.getNick() + " " + message[1] + " " + message[2] + "\r\n";
     Utils::sendMessage(fd, tmpMsg);
-    // :localhost 301 <nick> <target_nick> :<away_message>
     tmpMsg = ":localhost 301 " + client.getNick() + " " + message[1] + " :away_message\r\n";
     Utils::sendMessage(findClient(message[1], clients).getFd(), tmpMsg);
     chanel[message[2]].addInvite(findClient(message[1], clients).getFd(), findClient(message[1], clients).getNick());

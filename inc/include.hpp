@@ -40,3 +40,4 @@
 #define ERR_INVITEONLYCHAN " :Cannot join channel (+i)\r\n"
 #define ERR_NOTONCHANNEL " :You're not on that channel\r\n"
 #define ERR_USERONCHANNEL " :is already on channel\r\n"
+#define ERR_KEYSET " :Channel key already set\r\n"

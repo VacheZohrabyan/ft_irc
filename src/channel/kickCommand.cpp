@@ -24,7 +24,6 @@ void KickCommand::executeCommand(Client& client, std::map<std::string, Chanel>& 
         return Utils::errorChanOprivsNeed(client.getNick(), message[1], fd);
     if (!chanel[message[1]].hasClient(message[2]))
         return Utils::errorUserNotInChannel(message[2], message[1], fd);
-    // :[Sender_Nick]![User]@[Host] KICK [Channel_Name] [Target_Nick] :[Reason]
     std::string tmp = concatMessage(message); 
     std::string tmpMsg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getHost() + " KICK " + message[1] + " " + message[2] + " " + (tmp.size() == 1 ? (":" + message[2]) : tmp) + "\r\n";
     chanel[message[1]].broadCast(tmpMsg, -1);

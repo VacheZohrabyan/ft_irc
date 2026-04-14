@@ -14,12 +14,6 @@ OperatorMode::~OperatorMode()
 
 void OperatorMode::executeMode(Client& client, Chanel& chanel, int fd, const std::string& message, bool flag, const std::map<int, Client>& clients)
 {
-    (void)chanel;
-    (void)flag;
-    (void)message;
-    (void)client;
-    (void)fd;
-
     if (chanel.getRootFd().find(fd) == chanel.getRootFd().end())
         return Utils::errorChanOprivsNeed(client.getNick(), chanel.getChanelName(), fd);
     if (!findNick(clients, message))
@@ -28,7 +22,6 @@ void OperatorMode::executeMode(Client& client, Chanel& chanel, int fd, const std
         return Utils::errorUserNotInChannel(client.getNick(), message, fd);
     if (flag)
     {
-        // :[Sender_Nick]![User]@[Host] MODE [Channel_Name] [+o|-o] [Target_Nick]
         chanel.setOperatorPrivilege(getFd(clients, message));
         std::string tmpMsg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getHost() + " MODE " + chanel.getChanelName() + " +o " + message + "\r\n";
         chanel.broadCast(tmpMsg, -1);

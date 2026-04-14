@@ -18,6 +18,4 @@ void QuitMessageCommand::executeCommand(Client& client, std::map<int, Client>& c
     (void)chanel;
     (void)message;
     (void)fd;
-    if (clients.find(fd) != clients.end())
-        clients.erase(fd);
 }

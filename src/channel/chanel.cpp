@@ -183,8 +183,6 @@ const std::map<int, std::string>& Chanel::getChanelClients() const
     return _clients;
 }
 
-/// @brief stexic nerqev chgrel 
-/// @return 0
 bool Chanel::getLimit() const
 {
     return _limit;
@@ -236,8 +234,3 @@ void Chanel::setOperatorPrivilege(int fd)
 {
     _chanelRootFd.insert(fd);
 }
-
-// const std::map<int, std::string>& Chanel::getUserNick() const
-// {
-//     return _clients;
-// }

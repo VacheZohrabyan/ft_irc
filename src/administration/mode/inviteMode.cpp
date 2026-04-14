@@ -18,7 +18,6 @@ void InviteMode::executeMode(Client& client, Chanel& chanel, int fd, const std::
         return Utils::errorChanOprivsNeed(client.getNick(), chanel.getChanelName(), fd);
     if (flag)
     {
-        // :vzohraby!user@host MODE #test +i
         chanel.setInviteOnly(flag);
         std::string tmpMsg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getHost() + " MODE " + chanel.getChanelName() + " +i\r\n";
         chanel.broadCast(tmpMsg, -1); 

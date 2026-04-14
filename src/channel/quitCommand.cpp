@@ -13,7 +13,7 @@ QuitChannelCommand::~QuitChannelCommand()
 }
 
 void QuitChannelCommand::executeCommand(Client& client, std::map<std::string, Chanel>& chanel, int fd, std::vector<std::string>& message, const std::map<int, Client>& clients)
-{   // :<nick>!<user>@<host> QUIT :<reason>\r\n
+{
     for (std::map<std::string, Chanel>::iterator it = chanel.begin(); it != chanel.end(); ++it)
     {
         if (it->second.hasClient(fd))
