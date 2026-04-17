@@ -15,6 +15,8 @@
 #include <cctype>
 #include <limits>
 #include <ctime>
+#include <fstream>
+#include <cstdlib>
 
 #define MAX_EVENTS 10
 #define MAX_CHANELL 10

@@ -19,7 +19,6 @@ Server::Server(char** argv) : serverPass("12345"), serverLog("12345"), _socketFd
     _channelCommand["JOIN"] = new JoinCommand();
     _channelCommand["QUIT"] = new QuitChannelCommand();
     _channelCommand["PART"] = new PartCommand();
-    // _channelCommand["TOPIC"] = new TopicCommand();
     _channelCommand["NAMES"] = new NamesCommand();
     _channelCommand["LIST"] = new ListCommand();
     _channelCommand["INVITE"] = new InviteCommand();
@@ -32,8 +31,6 @@ Server::Server(char** argv) : serverPass("12345"), serverLog("12345"), _socketFd
     _administrativeCommand["MODE"] = new ModeCommand();
     _administrativeCommand["WHO"] = new WhoCommand();
     _administrativeCommand["WHOIS"] = new WhoisCommand();
-    _administrativeCommand["OPER"] = new OperCommand();
-    // _administrativeCommand["KILL"] = new KillCommand();
 }
 
 Server::Server(const Server& other)
@@ -79,7 +76,7 @@ void Server::hendlePort(const std::string& port)
         if (!std::isdigit(port[i]))
             throw std::invalid_argument("Invalid port(non digit)");
     }
-    int value = std::stoi(port);
+    int value = std::atoi(port.c_str());
     if (value < 0 || value > 65535)
         throw std::out_of_range("Invalid port(rang)");
     if (value >= 0 && value <= 1023)
@@ -153,7 +150,7 @@ void Server::runServer()
     }
     setNonblocking(_socketFd);
     _serverAddr.sin_family = AF_INET;
-    _serverAddr.sin_port = htons(std::stoi(_port));
+    _serverAddr.sin_port = htons(std::atoi(_port.c_str()));
     _serverAddr.sin_addr.s_addr = INADDR_ANY;
     std::memset(_serverAddr.sin_zero, 0x0, sizeof(_serverAddr.sin_zero));
 
@@ -224,7 +221,6 @@ void Server::runServer()
                     while ((pos = _clients[_events[i].data.fd].message.find("\r\n")) != std::string::npos)
                     {
                         std::string tmp = _clients[_events[i].data.fd].message.substr(0, pos);
-                        std::cout << "command = " << tmp << std::endl;
                         executeCommand(_events[i].data.fd, tmp);
                         _clients[_events[i].data.fd].message.erase(0, pos + 2);
                     }
@@ -239,7 +235,6 @@ void Server::runServer()
                 }
                 if (count == 0)
                 {
-                    std::cerr << "Client " << _events[i].data.fd << " disconnect" << std::endl;
                     if (_nickName.find(_clients[_events[i].data.fd].getNick()) != _nickName.end())
                         _nickName.erase(_clients[_events[i].data.fd].getNick());
                     if (_clients.find(_events[i].data.fd) != _clients.end())

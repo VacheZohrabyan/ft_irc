@@ -39,9 +39,11 @@ void LimitMode::executeMode(Client& client, Chanel& chanel, int fd, const std::s
 void LimitMode::addLimit(Client& client, Chanel& chanel, const std::string& message, bool flag) const
 {
     chanel.setLimit(flag);
-    std::size_t count = std::stoul(message);
+    std::size_t count = std::atoll(message.c_str());
     chanel.setMaxCount(count);
-    std::string tmpMsg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getHost() + " MODE " + chanel.getChanelName() + " +l " + std::to_string(chanel.getMaxCount()) + "\r\n";
+    std::stringstream ss;
+    ss << chanel.getMaxCount();
+    std::string tmpMsg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getHost() + " MODE " + chanel.getChanelName() + " +l " + ss.str() + "\r\n";
     chanel.broadCast(tmpMsg, -1);
 }
 
@@ -49,6 +51,8 @@ void LimitMode::subLimit(Client& client, Chanel& chanel, bool flag) const
 {
     chanel.setLimit(flag);
     chanel.setMaxCount(std::numeric_limits<std::size_t>::max());
-    std::string tmpMsg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getHost() + " MODE " + chanel.getChanelName() + " -l " + std::to_string(chanel.getMaxCount()) + "\r\n";
+    std::stringstream ss;
+    ss << chanel.getMaxCount();
+    std::string tmpMsg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getHost() + " MODE " + chanel.getChanelName() + " -l " + ss.str() + "\r\n";
     chanel.broadCast(tmpMsg, -1);
 }

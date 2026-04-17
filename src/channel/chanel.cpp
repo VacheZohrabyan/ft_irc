@@ -23,7 +23,7 @@ Chanel::Chanel(const std::string& name, int fd, const std::string& key)
     _chanelName = name;
     _chanelRootFd.insert(fd);
     _chanelkey = key;
-    _createTime = std::time(nullptr);
+    _createTime = std::time(NULL);
     _inviteOnly = false;
     if (key.empty())
         _chanelPasswd = false;

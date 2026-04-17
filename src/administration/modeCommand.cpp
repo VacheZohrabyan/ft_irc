@@ -44,7 +44,9 @@ void ModeCommand::executeCommand(Client& client, std::map<std::string, Chanel>& 
             }
             tmpMsg += numMsg + "\r\n";
             Utils::sendMessage(fd, tmpMsg);
-            tmpMsg = ":localhost 329 " + client.getNick() + " " + message[1] + " " + std::to_string(chanels[message[1]].getTime()) + "\r\n";
+            std::stringstream ss;
+            ss << chanels[message[1]].getTime();
+            tmpMsg = ":localhost 329 " + client.getNick() + " " + message[1] + " " + ss.str() + "\r\n";
             Utils::sendMessage(fd, tmpMsg);
         }
         else

@@ -6,7 +6,6 @@
 #include "administration/modeCommand.hpp"
 #include "administration/whoCommand.hpp"
 #include "administration/whoisCommand.hpp"
-#include "administration/operCommand.hpp"
 
 #include "register/capCommand.hpp"
 #include "register/passCommand.hpp"

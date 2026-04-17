@@ -28,8 +28,6 @@ void NickCommand::executeCommand(Client& client, std::set<std::string>& _nickNam
     }
     else
     {
-        if ((client.getPass().empty() && !client.getServerPass().empty()) || (!client.getPass().empty() && client.getServerPass().empty()))
-            Utils::errorMoreParams(client.getNick(), fd);
         if (_nickName.find(message[1]) != _nickName.end())
             return Utils::errorNickNameInUse(message[1], fd);
         else
