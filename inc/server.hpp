@@ -23,7 +23,6 @@
 #include "channel/kickCommand.hpp"
 
 #include "message/privmsgCommand.hpp"
-#include "message/noticeCommand.hpp"
 #include "message/quitCommand.hpp"
 
 extern bool server_runing;

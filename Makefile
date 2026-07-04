@@ -47,7 +47,6 @@ SRCS = $(SRC_DIR)/main.cpp \
 	   $(SRC_DIR)/$(CHA_DIR)/topicCommand.cpp \
 	   $(SRC_DIR)/$(MES_DIR)/privmsgCommand.cpp \
 	   $(SRC_DIR)/$(MES_DIR)/quitCommand.cpp \
-	   $(SRC_DIR)/$(MES_DIR)/noticeCommand.cpp \
 	  
 
 HEADER = $(INC_DIR)/include.hpp \
@@ -81,7 +80,6 @@ HEADER = $(INC_DIR)/include.hpp \
 		 $(INC_DIR)/$(CHA_DIR)/kickCommand.hpp \
 		 $(INC_DIR)/$(CHA_DIR)/topicCommand.hpp \
 	     $(INC_DIR)/$(MES_DIR)/privmsgCommand.hpp \
-	     $(INC_DIR)/$(MES_DIR)/noticeCommand.hpp \
 	     $(INC_DIR)/$(MES_DIR)/quitCommand.hpp \
 
 OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)

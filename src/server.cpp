@@ -22,10 +22,9 @@ Server::Server(char** argv) : serverPass("12345"), serverLog("12345"), _socketFd
     _channelCommand["NAMES"] = new NamesCommand();
     _channelCommand["LIST"] = new ListCommand();
     _channelCommand["INVITE"] = new InviteCommand();
-    _channelCommand["KICK"] = new KickCommand();//chexav
+    _channelCommand["KICK"] = new KickCommand();
 
     _messageCommand["PRIVMSG"] = new PrivMsgCommand();
-    _messageCommand["NOTICE"] = new NoticeCommand();
     _messageCommand["QUIT"] = new QuitMessageCommand();
 
     _administrativeCommand["MODE"] = new ModeCommand();
@@ -47,24 +46,39 @@ Server& Server::operator=(const Server& other)
 
 Server::~Server()
 {
-    for (std::map<std::string, ARegisterCommand*>::iterator it = _registerCommand.begin(); it != _registerCommand.end(); ++it)
-        delete it->second;
-    _registerCommand.clear();
-    for (std::map<std::string, AChannelCommand*>::iterator it = _channelCommand.begin(); it != _channelCommand.end(); ++it)
-        delete it->second;
-    _channelCommand.clear();
-    for (std::map<std::string, AMessageCommand*>::iterator it = _messageCommand.begin(); it != _messageCommand.end(); ++it)
-        delete it->second;
-    _messageCommand.clear();
-    for (std::map<std::string, AAdministrationCommand*>::iterator it = _administrativeCommand.begin(); it != _administrativeCommand.end(); ++it)
-        delete it->second;
-    _administrativeCommand.clear();
+    if (!_registerCommand.empty())
+    {
+        for (std::map<std::string, ARegisterCommand*>::iterator it = _registerCommand.begin(); it != _registerCommand.end(); ++it)
+            delete it->second;
+        _registerCommand.clear();
+    }
+    if (!_channelCommand.empty())
+    {
+        for (std::map<std::string, AChannelCommand*>::iterator it = _channelCommand.begin(); it != _channelCommand.end(); ++it)
+            delete it->second;
+        _channelCommand.clear();
+    }
+    if (!_messageCommand.empty())
+    {
+        for (std::map<std::string, AMessageCommand*>::iterator it = _messageCommand.begin(); it != _messageCommand.end(); ++it)
+            delete it->second;
+        _messageCommand.clear();
+    }
+    if (!_administrativeCommand.empty())
+    {
+        for (std::map<std::string, AAdministrationCommand*>::iterator it = _administrativeCommand.begin(); it != _administrativeCommand.end(); ++it)
+            delete it->second;
+        _administrativeCommand.clear();
+    }
     for (std::map<int, Client>::iterator it = _clients.begin(); it != _clients.end(); ++it)
         close(it->first);
-    for (int i = 0; i < _eventCount; ++i)
-        epoll_ctl(_epollFD, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
-    close(_event.data.fd);
-    close(_socketFd);
+    if (_eventCount != 0)
+    {
+        for (int i = 0; i < _eventCount; ++i)
+            epoll_ctl(_epollFD, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
+        close(_event.data.fd);
+        close(_socketFd);
+    }
 }
 
 void Server::hendlePort(const std::string& port)
