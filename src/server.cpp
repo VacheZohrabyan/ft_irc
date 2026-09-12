@@ -154,7 +154,96 @@ void Server::executeCommand(int fd, const std::string& message)
         _registerCommand[tmp[0]]->executeCommand(_clients[fd], _nickName, fd, tmp);
 }
 
-void Server::runServer()
+bool Server::handleClientDisconnection(int index, ssize_t count)
+{
+    if (count == 0)
+    {
+        if (_nickName.find(_clients[_events[index].data.fd].getNick()) != _nickName.end())
+            _nickName.erase(_clients[_events[index].data.fd].getNick());
+        if (_clients.find(_events[index].data.fd) != _clients.end())
+            _clients.erase(_events[index].data.fd);
+        epoll_ctl(_epollFD, EPOLL_CTL_DEL, _events[index].data.fd, NULL);
+        close(_events[index].data.fd);
+        return false;
+    }
+    if (count == -1)
+    {
+        if (errno != EAGAIN)
+        {
+            if (_nickName.find(_clients[_events[index].data.fd].getNick()) != _nickName.end())
+                _nickName.erase(_clients[_events[index].data.fd].getNick());
+            if (_clients.find(_events[index].data.fd) != _clients.end())
+                _clients.erase(_events[index].data.fd);
+            epoll_ctl(_epollFD, EPOLL_CTL_DEL, _events[index].data.fd, NULL);
+            close(_events[index].data.fd);
+        }
+    }
+    return true;
+}
+
+bool Server::acceptNewClients()
+{
+    struct sockaddr_in clinetAddr;
+    socklen_t len = sizeof(clinetAddr);
+    int clientFd = accept(_socketFd, (struct sockaddr*)&clinetAddr, &len);
+    if (clientFd == -1)
+    {
+        if (errno == EAGAIN || errno == EWOULDBLOCK)
+            return false;
+        else
+        {
+            std::cerr << "accept failed" << std::endl;
+            return false;
+        }
+    }
+    setNonblocking(clientFd);
+    struct epoll_event ev;
+    ev.events = EPOLLIN | EPOLLET;
+    ev.data.fd = clientFd;
+    
+    _clients[clientFd] = Client(clientFd, _pass);
+    if (epoll_ctl(_epollFD, EPOLL_CTL_ADD, ev.data.fd, &ev) == -1)
+    {
+        std::cerr << "epoll_ctl failed, (clinet_fd)" << std::endl;
+        close(ev.data.fd);
+    }
+    // }
+    return true;
+}
+
+bool Server::handleClientData(int index)
+{
+    char buffer[512];
+    std::memset(buffer, 0x0, 512);
+    ssize_t count;
+    while ((count = recv(_events[index].data.fd, buffer, 512, 0)) > 0)
+    {
+        _clients[_events[index].data.fd].message.append(buffer, count);
+        std::memset(buffer, 0x0, 512);
+    }
+    try
+    {
+        std::string::size_type pos;
+        while ((pos = _clients[_events[index].data.fd].message.find("\r\n")) != std::string::npos)
+        {
+            std::string tmp = _clients[_events[index].data.fd].message.substr(0, pos);
+            std::cout << "message = " << tmp << std::endl;
+            executeCommand(_events[index].data.fd, tmp);
+            _clients[_events[index].data.fd].message.erase(0, pos + 2);
+        }
+        if (isRegistered(_clients[_events[index].data.fd], _events[index].data.fd) && !_clients[_events[index].data.fd].getIsRegistered())
+            _clients[_events[index].data.fd].setIsRegistered(true);
+    }
+    catch(const std::exception& e)
+    {
+        _clients[_events[index].data.fd].message.clear();
+        epoll_ctl(_epollFD, EPOLL_CTL_DEL, _events[index].data.fd, NULL);
+        close(_events[index].data.fd);
+    }
+    return handleClientDisconnection(index, count);
+}
+
+void Server::initializeServer()
 {
     _socketFd = socket(AF_INET, SOCK_STREAM, 0);
     int opt = 1;
@@ -168,7 +257,8 @@ void Server::runServer()
     _serverAddr.sin_addr.s_addr = INADDR_ANY;
     std::memset(_serverAddr.sin_zero, 0x0, sizeof(_serverAddr.sin_zero));
 
-    int bindStatus = bind(_socketFd, (const sockaddr*)&_serverAddr, (socklen_t)sizeof(_serverAddr));
+    // int bindStatus = bind(_socketFd, (const sockaddr*)&_serverAddr, (socklen_t)sizeof(_serverAddr));
+    int bindStatus = bind(_socketFd, reinterpret_cast<const sockaddr*>(&_serverAddr), static_cast<socklen_t>(sizeof(_serverAddr)));
     if (bindStatus == -1)
         throw std::runtime_error("bind failed");
     int listenStatus = listen(_socketFd, SOMAXCONN);
@@ -184,92 +274,33 @@ void Server::runServer()
 
     if (epoll_ctl(_epollFD, EPOLL_CTL_ADD, _socketFd, &_event) == -1)
         throw std::runtime_error("epoll_ctl failed");
+}
 
+void Server::runEventLoop()
+{
     while (server_runing)
     {
         _eventCount = epoll_wait(_epollFD, _events, MAX_EVENTS, -1);
         if (_eventCount == -1)
             return ;
-        for (int i = 0; i < _eventCount; ++i)
+        for (int index = 0; index < _eventCount; ++index)
         {
-            if (_events[i].data.fd == _socketFd)
+            if (_events[index].data.fd == _socketFd)
             {
-                struct sockaddr_in clinetAddr;
-                socklen_t len = sizeof(clinetAddr);
-                int clientFd = accept(_socketFd, (struct sockaddr*)&clinetAddr, &len);
-                if (clientFd == -1)
-                {
-                    if (errno == EAGAIN || errno == EWOULDBLOCK)
-                        break;
-                    else
-                    {
-                        std::cerr << "accept failed" << std::endl;
-                        break;
-                    }
-                }
-                setNonblocking(clientFd);
-                struct epoll_event ev;
-                ev.events = EPOLLIN | EPOLLET;
-                ev.data.fd = clientFd;
-                
-                _clients[clientFd] = Client(clientFd, _pass);
-                if (epoll_ctl(_epollFD, EPOLL_CTL_ADD, ev.data.fd, &ev) == -1)
-                {
-                    std::cerr << "epoll_ctl failed, (clinet_fd)" << std::endl;
-                    close(ev.data.fd);
-                }
+                if (!acceptNewClients())
+                    break;
             }
             else
             {
-                char buffer[512];
-                std::memset(buffer, 0x0, 512);
-                ssize_t count;
-                while ((count = recv(_events[i].data.fd, buffer, 512, 0)) > 0)
-                {
-                    _clients[_events[i].data.fd].message.append(buffer, count);
-                    std::memset(buffer, 0x0, 512);
-                }
-                try
-                {
-                    std::string::size_type pos;
-                    while ((pos = _clients[_events[i].data.fd].message.find("\r\n")) != std::string::npos)
-                    {
-                        std::string tmp = _clients[_events[i].data.fd].message.substr(0, pos);
-                        executeCommand(_events[i].data.fd, tmp);
-                        _clients[_events[i].data.fd].message.erase(0, pos + 2);
-                    }
-                    if (isRegistered(_clients[_events[i].data.fd], _events[i].data.fd) && !_clients[_events[i].data.fd].getIsRegistered())
-                        _clients[_events[i].data.fd].setIsRegistered(true);
-                }
-                catch(const std::exception& e)
-                {
-                    _clients[_events[i].data.fd].message.clear();
-                    epoll_ctl(_epollFD, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
-                    close(_events[i].data.fd);
-                }
-                if (count == 0)
-                {
-                    if (_nickName.find(_clients[_events[i].data.fd].getNick()) != _nickName.end())
-                        _nickName.erase(_clients[_events[i].data.fd].getNick());
-                    if (_clients.find(_events[i].data.fd) != _clients.end())
-                        _clients.erase(_events[i].data.fd);
-                    epoll_ctl(_epollFD, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
-                    close(_events[i].data.fd);
+                if (!handleClientData(index))
                     break;
-                }
-                if (count == -1)
-                {
-                    if (errno != EAGAIN)
-                    {
-                        if (_nickName.find(_clients[_events[i].data.fd].getNick()) != _nickName.end())
-                            _nickName.erase(_clients[_events[i].data.fd].getNick());
-                        if (_clients.find(_events[i].data.fd) != _clients.end())
-                            _clients.erase(_events[i].data.fd);
-                        epoll_ctl(_epollFD, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
-                        close(_events[i].data.fd);
-                    }
-                }
             }
         }
     }
+}
+
+void Server::runServer()
+{
+    initializeServer();
+    runEventLoop();
 }

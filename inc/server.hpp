@@ -62,7 +62,13 @@ private:
     void hendlePass(const std::string& pass);
     void executeCommand(int fd, const std::string& message);
     int setNonblocking(int fd);
-    
+    bool handleClientData(int index);
+    bool handleClientDisconnection(int index, ssize_t count);
+    bool acceptNewClients();
+    void initializeServer();
+    void runEventLoop();
+
+
 private:
     bool isRegistered(Client& client, int fd);
     

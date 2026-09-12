@@ -14,7 +14,6 @@ int main(int argc, char** argv)
 {
     signal(SIGINT, signalHandler);
     signal(SIGQUIT, signalHandler);
-    (void)argc;
     
     if (argc != 3)
         return -1;

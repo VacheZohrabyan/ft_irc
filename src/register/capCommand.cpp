@@ -14,7 +14,6 @@ CapCommand::~CapCommand()
 void CapCommand::executeCommand(Client& client, std::set<std::string>& _nickName, int fd, std::vector<std::string>& message)
 {
     (void)client;
-    (void)message;
     (void)_nickName;
     if (message[1] == "LS")
         Utils::sendMessage(fd, ":localhost CAP * LS\r\n");

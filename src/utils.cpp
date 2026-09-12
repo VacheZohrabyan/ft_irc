@@ -5,9 +5,8 @@ std::vector<std::string> Utils::mySplit(const std::string& message, char delimit
     std::vector<std::string> tokens;
     std::string token;
     std::istringstream tokenStream(message);
-    while (std::getline(tokenStream, token, delimiter)) {
+    while (std::getline(tokenStream, token, delimiter))
         tokens.push_back(token);
-    }
     return tokens;
 }
 
