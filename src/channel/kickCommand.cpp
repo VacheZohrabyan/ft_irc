@@ -16,6 +16,8 @@ KickCommand::~KickCommand()
 
 void KickCommand::executeCommand(Client& client, std::map<std::string, Chanel>& chanel, int fd, std::vector<std::string>& message, const std::map<int, Client>& clients)
 {
+    if (message.size() < 2)
+        return Utils::errorMoreParams(client.getNick(), fd);
     if (chanel.find(message[1]) == chanel.end())
         return Utils::errorNoSuchChannel(message[1], fd);
     if (!chanel[message[1]].hasClient(client.getNick()))

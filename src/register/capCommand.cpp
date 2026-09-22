@@ -11,12 +11,13 @@ CapCommand::~CapCommand()
 
 }
 
-void CapCommand::executeCommand(Client& client, std::set<std::string>& _nickName, int fd, std::vector<std::string>& message)
+bool CapCommand::executeCommand(Client& client, std::set<std::string>& _nickName, int fd, std::vector<std::string>& message)
 {
     (void)client;
     (void)_nickName;
     if (message[1] == "LS")
-        Utils::sendMessage(fd, ":localhost CAP * LS\r\n");
+        return (Utils::sendMessage(fd, ":localhost CAP * LS\r\n"), true);
     else if (message[1] == "END")
-        return ;
+        return true;
+    return true;
 }

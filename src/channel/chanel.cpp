@@ -44,7 +44,7 @@ void Chanel::addClient(int fd, const std::string& nick)
     if (_clients.find(fd) != _clients.end())
         return;
     if (_clients.size() == _maxCountUser)
-        Utils::errorChanelIsFull(_chanelName, fd);
+        return Utils::errorChanelIsFull(_chanelName, fd);
     _clients[fd] = nick;
 }
 

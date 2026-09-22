@@ -14,6 +14,8 @@ InviteCommand::~InviteCommand()
 
 void InviteCommand::executeCommand(Client& client, std::map<std::string, Chanel>& chanel, int fd, std::vector<std::string>& message, const std::map<int, Client>& clients)
 {
+    if (message.size() < 1 || message.size() < 2)
+        return ;
     if (!findNick(message[1], clients))
         return Utils::errorNoSuchNick(message[1], fd);
     if (chanel.find(message[2]) != chanel.end())
@@ -24,6 +26,8 @@ void InviteCommand::executeCommand(Client& client, std::map<std::string, Chanel>
             return Utils::errorUserOnChannel(client.getUser(), message[2], fd);
         else if (chanel[message[2]].getRootFd().find(client.getFd()) == chanel[message[2]].getRootFd().end())
             return Utils::errorChanOprivsNeed(client.getNick(), message[2], fd);
+        else if (chanel[message[2]].getChanelClients().size() >= chanel[message[2]].getMaxCount())
+            return Utils::errorChannelIsFull(message[2], fd);
     }
     else    
         return Utils::errorNoSuchChannel(message[2], fd);

@@ -11,5 +11,5 @@ public:
     ~QuitRegisterCommand();
     
 public:
-    void executeCommand(Client& client, std::set<std::string>& _nickName, int fd, std::vector<std::string>& message);
+    bool executeCommand(Client& client, std::set<std::string>& _nickName, int fd, std::vector<std::string>& message);
 };

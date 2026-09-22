@@ -17,16 +17,14 @@ void Utils::sendMessage(int fd, const std::string& message)
 
 void Utils::errorMoreParams(const std::string& nick, int fd)
 {
-    std::string tmpMsg = ":localhost 461 " + (nick.empty() ? "*" : nick) + "PASS" + std::string(ERR_NEEDMOREPARAMS);
+    std::string tmpMsg = ":localhost 461 " + (nick.empty() ? "*" : nick) + std::string(ERR_NEEDMOREPARAMS);
     Utils::sendMessage(fd, tmpMsg);
-    throw std::runtime_error("");
 }
 
 void Utils::errorAlreadyRegister(const std::string& nick, int fd)
 {
     std::string tmpMsg =  ":localhost 462 " + (nick.empty() ? "*" : nick) + ERR_ALREADYREGISTRED;
     Utils::sendMessage(fd, tmpMsg);
-    throw std::runtime_error("");
 }
 
 void Utils::errorNickNameInUse(const std::string& nick, int fd)
@@ -46,7 +44,7 @@ void Utils::errorBadChanMask(const std::string& chanelName, int fd)
 {
     std::string tmpMsg = ":localhost 475 " + chanelName + ERR_BADCHANMASK;
     Utils::sendMessage(fd, tmpMsg);
-    throw std::runtime_error("");
+    // throw std::runtime_error("");
 }
 
 void Utils::errorNoSuchNick(const std::string& chanelName, int fd)

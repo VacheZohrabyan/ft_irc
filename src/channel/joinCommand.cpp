@@ -15,9 +15,9 @@ JoinCommand::~JoinCommand()
 void JoinCommand::executeCommand(Client& client, std::map<std::string, Chanel>& chanel, int fd, std::vector<std::string>& message, const std::map<int, Client>& clients)
 {
 	if (message.size() < 2)
-		Utils::errorMoreParams(client.getNick(), fd);
+		return Utils::errorMoreParams(client.getNick(), fd);
 	if (message[1].empty() || (message[1][0] != '#' && message[1][0] != '&'))
-		Utils::errorBadChanMask(client.getNick(), fd);
+		return Utils::errorBadChanMask(client.getNick(), fd);
 	std::map<std::string, Chanel>::iterator it = chanel.find(message[1]);
 	if (it == chanel.end())
 	{

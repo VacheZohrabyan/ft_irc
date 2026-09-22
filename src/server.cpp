@@ -23,6 +23,7 @@ Server::Server(char** argv) : serverPass("12345"), serverLog("12345"), _socketFd
     _channelCommand["LIST"] = new ListCommand();
     _channelCommand["INVITE"] = new InviteCommand();
     _channelCommand["KICK"] = new KickCommand();
+    _channelCommand["TOPIC"] = new TopicCommand();
 
     _messageCommand["PRIVMSG"] = new PrivMsgCommand();
     _messageCommand["QUIT"] = new QuitMessageCommand();
@@ -111,12 +112,7 @@ void Server::hendlePass(const std::string& pass)
 
 int Server::setNonblocking(int fd)
 {
-    int flags = fcntl(fd, F_GETFL, 0);
-    if (flags == -1) {
-        std::cerr << "fcntl(F_GETFL)" << std::endl;
-        return -1;
-    }
-    if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1) {
+    if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
         std::cerr << "fcntl(F_SETFL)" << std::endl;
         return -1;
     }
@@ -147,11 +143,11 @@ void Server::executeCommand(int fd, const std::string& message)
     if (_administrativeCommand.find(tmp[0]) != _administrativeCommand.end())
         _administrativeCommand[tmp[0]]->executeCommand(_clients[fd], _chanels, fd, tmp, _clients);
     if (_messageCommand.find(tmp[0]) != _messageCommand.end())
-        _messageCommand[tmp[0]]->executeCommand(_clients[fd], _clients, _chanels[tmp[1]], fd, tmp);
+        _messageCommand[tmp[0]]->executeCommand(_clients[fd], _clients, _chanels[tmp.size() > 2 ? tmp[1] : tmp[0]], fd, tmp);
     if (_channelCommand.find(tmp[0]) != _channelCommand.end() && isRegistered(_clients[fd], fd))
         _channelCommand[tmp[0]]->executeCommand(_clients[fd], _chanels, fd, tmp, _clients);        
     if (_registerCommand.find(tmp[0]) != _registerCommand.end())
-        _registerCommand[tmp[0]]->executeCommand(_clients[fd], _nickName, fd, tmp);
+        return ((void)_registerCommand[tmp[0]]->executeCommand(_clients[fd], _nickName, fd, tmp));
 }
 
 bool Server::handleClientDisconnection(int index, ssize_t count)
@@ -207,7 +203,6 @@ bool Server::acceptNewClients()
         std::cerr << "epoll_ctl failed, (clinet_fd)" << std::endl;
         close(ev.data.fd);
     }
-    // }
     return true;
 }
 
@@ -221,25 +216,16 @@ bool Server::handleClientData(int index)
         _clients[_events[index].data.fd].message.append(buffer, count);
         std::memset(buffer, 0x0, 512);
     }
-    try
+    std::string::size_type pos;
+    while ((pos = _clients[_events[index].data.fd].message.find("\r\n")) != std::string::npos)
     {
-        std::string::size_type pos;
-        while ((pos = _clients[_events[index].data.fd].message.find("\r\n")) != std::string::npos)
-        {
-            std::string tmp = _clients[_events[index].data.fd].message.substr(0, pos);
-            std::cout << "message = " << tmp << std::endl;
-            executeCommand(_events[index].data.fd, tmp);
-            _clients[_events[index].data.fd].message.erase(0, pos + 2);
-        }
-        if (isRegistered(_clients[_events[index].data.fd], _events[index].data.fd) && !_clients[_events[index].data.fd].getIsRegistered())
-            _clients[_events[index].data.fd].setIsRegistered(true);
+        std::string tmp = _clients[_events[index].data.fd].message.substr(0, pos);
+        std::cout << "message = " << tmp << std::endl;
+        executeCommand(_events[index].data.fd, tmp);
+        _clients[_events[index].data.fd].message.erase(0, pos + 2);
     }
-    catch(const std::exception& e)
-    {
-        _clients[_events[index].data.fd].message.clear();
-        epoll_ctl(_epollFD, EPOLL_CTL_DEL, _events[index].data.fd, NULL);
-        close(_events[index].data.fd);
-    }
+    if (isRegistered(_clients[_events[index].data.fd], _events[index].data.fd) && !_clients[_events[index].data.fd].getIsRegistered())
+        _clients[_events[index].data.fd].setIsRegistered(true);
     return handleClientDisconnection(index, count);
 }
 
@@ -285,6 +271,9 @@ void Server::runEventLoop()
             return ;
         for (int index = 0; index < _eventCount; ++index)
         {
+            std::cout << "FD: " << _events[index].data.fd
+              << " EVENTS: " << _events[index].events
+              << std::endl;
             if (_events[index].data.fd == _socketFd)
             {
                 if (!acceptNewClients())

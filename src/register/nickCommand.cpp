@@ -11,16 +11,16 @@ NickCommand::~NickCommand()
 
 }
 
-void NickCommand::executeCommand(Client& client, std::set<std::string>& _nickName, int fd, std::vector<std::string>& message)
+bool NickCommand::executeCommand(Client& client, std::set<std::string>& _nickName, int fd, std::vector<std::string>& message)
 {
     (void)_nickName;
     
-    if (message[1].empty() || message.size() < 2)
-        Utils::errorMoreParams(client.getNick(), fd);
+    if (message.size() < 2 || message[1].empty())
+        return (Utils::errorMoreParams(client.getNick(), fd), false);
     if (!client.getNick().empty())
     {
         if (_nickName.find(message[1]) != _nickName.end())
-            Utils::errorNickNameInUse(message[1], fd);
+            return (Utils::errorNickNameInUse(message[1], fd), false);
         else
             _nickName.erase(client.getNick());
         client.setNick(message[1]);
@@ -29,11 +29,12 @@ void NickCommand::executeCommand(Client& client, std::set<std::string>& _nickNam
     else
     {
         if (_nickName.find(message[1]) != _nickName.end())
-            return Utils::errorNickNameInUse(message[1], fd);
+            return (Utils::errorNickNameInUse(message[1], fd), false);
         else
         {
             client.setNick(message[1]);
             _nickName.insert(client.getNick());
         }
     }
+    return true;
 }
