@@ -220,7 +220,7 @@ bool Server::handleClientData(int index)
     while ((pos = _clients[_events[index].data.fd].message.find("\r\n")) != std::string::npos)
     {
         std::string tmp = _clients[_events[index].data.fd].message.substr(0, pos);
-        std::cout << "message = " << tmp << std::endl;
+        // std::cout << "message = " << tmp << std::endl;
         executeCommand(_events[index].data.fd, tmp);
         _clients[_events[index].data.fd].message.erase(0, pos + 2);
     }
