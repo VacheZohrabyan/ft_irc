@@ -36,7 +36,14 @@ void TopicCommand::executeCommand(Client& client, std::map<std::string, Chanel>&
         return Utils::errorNotOnChannel(message[1], fd);
     if (chanel[message[1]].getTopicProtection() && chanel[message[1]].getRootFd().find(fd) == chanel[message[1]].getRootFd().end())
         return Utils::errorChanOprivsNeed(client.getNick(), message[1], fd);
-    chanel[message[1]].setTopic(message[2].substr(1, message[2].length()));
+    std::string topic = "";    
+    for (std::vector<std::string>::const_iterator it = message.begin() + 2; it != message.end(); ++it)
+    {
+        if (it != message.begin() + 2)
+            topic += " ";
+        topic += *it;
+    }
+    chanel[message[1]].setTopic(topic);
     std::string tmpMsg = ":" + client.getNick() + "!" + client.getUser() + "@" + "localhost TOPIC " + message[1] + " " + concatMessage(message) + "\r\n";
     chanel[message[1]].broadCast(tmpMsg, -1);
 }

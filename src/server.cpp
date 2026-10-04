@@ -220,7 +220,6 @@ bool Server::handleClientData(int index)
     while ((pos = _clients[_events[index].data.fd].message.find("\r\n")) != std::string::npos)
     {
         std::string tmp = _clients[_events[index].data.fd].message.substr(0, pos);
-        // std::cout << "message = " << tmp << std::endl;
         executeCommand(_events[index].data.fd, tmp);
         _clients[_events[index].data.fd].message.erase(0, pos + 2);
     }
@@ -271,9 +270,6 @@ void Server::runEventLoop()
             return ;
         for (int index = 0; index < _eventCount; ++index)
         {
-            std::cout << "FD: " << _events[index].data.fd
-              << " EVENTS: " << _events[index].events
-              << std::endl;
             if (_events[index].data.fd == _socketFd)
             {
                 if (!acceptNewClients())
